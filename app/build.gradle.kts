@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.walkmate"
+    namespace = "com.WalkMateApp.walkmate"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.walkmate"
+        applicationId = "com.WalkMateApp.walkmate"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
