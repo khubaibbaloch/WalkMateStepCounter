@@ -11,7 +11,7 @@ import com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.SettingsScreen
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = ScreenRoutes.SettingsScreen.route) {
+    NavHost(navController = navController, startDestination = ScreenRoutes.HomeScreen.route) {
         composable(ScreenRoutes.HomeScreen.route) {
             HomeScreen(navController = navController)
         }

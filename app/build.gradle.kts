@@ -70,4 +70,5 @@ dependencies {
 
     //Navigation compose
     implementation(libs.androidx.navigation)
+    implementation ("co.yml:ycharts:2.1.0")
 }
