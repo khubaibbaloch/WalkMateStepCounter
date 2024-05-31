@@ -58,8 +58,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import co.yml.charts.axis.AxisData
+import co.yml.charts.axis.DataCategoryOptions
+import co.yml.charts.common.utils.DataUtils.getBarChartData
+import co.yml.charts.ui.barchart.BarChart
+import co.yml.charts.ui.barchart.models.BarChartData
+import co.yml.charts.ui.barchart.models.BarChartType
 
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.Pink40
 import com.WalkMateApp.walkmate.ui.theme.Pink80
@@ -78,7 +85,7 @@ fun HomeScreen(navController: NavController) {
                 navigationIcon = {
                     IconButton(
                         onClick = {
-                            // Handle the navigation icon press
+                            navController.navigate(ScreenRoutes.SettingsScreen.route)
                         },
                         modifier = Modifier
                             .padding(start = 8.dp)
@@ -103,7 +110,9 @@ fun HomeScreen(navController: NavController) {
                             .size(40.dp)
                             .clip(CircleShape)
                             .background(Color.Gray)
-                            .clickable {})
+                            .clickable {
+                                navController.navigate(ScreenRoutes.ProfileScreen.route)
+                            })
                 },
             )
         }, containerColor = MidnightBlue

@@ -65,7 +65,7 @@ fun ProfileItemCard(
                 )
             }
 
-            Spacer(modifier = Modifier.width(2.dp))
+            Spacer(modifier = Modifier.width(6.dp))
 
             Text(
                 text = valueText,
