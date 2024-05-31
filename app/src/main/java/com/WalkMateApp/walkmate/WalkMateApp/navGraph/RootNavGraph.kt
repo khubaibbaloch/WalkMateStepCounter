@@ -1,7 +1,6 @@
 package com.WalkMateApp.walkmate.WalkMateApp.navGraph
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -18,6 +17,10 @@ fun RootNavGraph(navController: NavHostController) {
 
         composable(ScreenRoutes.SettingsScreen.route){
             SettingsScreen(navController = navController)
+        }
+
+        composable(ScreenRoutes.ProfileScreen.route){
+            ProfileScreen(navController = navController)
         }
     }
 }
