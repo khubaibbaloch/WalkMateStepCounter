@@ -70,5 +70,6 @@ dependencies {
 
     //Navigation compose
     implementation(libs.androidx.navigation)
+    //noinspection UseTomlInstead
     implementation ("co.yml:ycharts:2.1.0")
 }
