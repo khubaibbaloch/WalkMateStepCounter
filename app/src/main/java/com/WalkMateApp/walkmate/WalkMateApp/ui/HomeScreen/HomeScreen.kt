@@ -70,9 +70,6 @@ import co.yml.charts.ui.barchart.models.BarChartType
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
-import com.WalkMateApp.walkmate.ui.theme.Pink40
-import com.WalkMateApp.walkmate.ui.theme.Pink80
-import com.WalkMateApp.walkmate.ui.theme.PurpleGrey80
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 

@@ -40,34 +40,35 @@ fun DropdownRowWithBarChart() {
 
 
     val dataCategoryOptions = DataCategoryOptions(
-        true, false
-
+        false, true
     )
 
 
     val barChartData = DataUtils.getBarChartData(
-        listSize = 7,
-        maxRange = 7,
+        listSize = 31,
+        maxRange = 31,
         barChartType = BarChartType.VERTICAL,
         dataCategoryOptions = dataCategoryOptions
     )
     // Define xAxisData and yAxisData
     val maxRange = 1000f
-    val yStepSize = 5
+    val yStepSize = 10
 
     val xAxisData = AxisData.Builder()
-        .backgroundColor(Color.Transparent)
-        .axisLineColor(Color.Black)
+        .axisLineColor(Color.White)
         .axisLabelColor(Color.White)
-        .axisStepSize(30.dp)
+        .axisStepSize(10.dp)
+        .shouldDrawAxisLineTillEnd(true)
         .steps(barChartData.size - 1)
-        .bottomPadding(40.dp)
-        .axisLabelAngle(20f)
-        .labelData { index -> barChartData[index].label }
+        .bottomPadding(10.dp)
+        .startDrawPadding(18.dp)
+        .labelData { index -> "$index" }
         .build()
 
     val yAxisData = AxisData.Builder()
-        .backgroundColor(Color.Transparent)
+        .backgroundColor(TwilightBlue)
+        .axisLineColor(Color.White)
+        .axisLabelColor(Color.White)
         .steps(yStepSize)
         .labelAndAxisLinePadding(20.dp)
         .axisOffset(20.dp)
@@ -145,9 +146,11 @@ fun DropdownRowWithBarChart() {
         // Bar chart
         BarChart(
             modifier = Modifier
-                .fillMaxWidth()
                 .height(350.dp),
             barChartData = BarChartData(
+                paddingEnd= 0.dp,
+                horizontalExtraSpace = 20.dp,
+                backgroundColor = TwilightBlue,
                 chartData = barChartData,
                 xAxisData = xAxisData,
                 yAxisData = yAxisData
