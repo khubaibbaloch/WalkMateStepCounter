@@ -55,9 +55,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import co.yml.charts.axis.AxisData
 import co.yml.charts.axis.DataCategoryOptions
 import co.yml.charts.common.utils.DataUtils.getBarChartData
@@ -122,6 +124,7 @@ fun HomeScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(innerPadding)
+                .padding(14.dp)
                 .verticalScroll(rememberScrollState()),
         ) {
             GreetingRow()
@@ -130,6 +133,13 @@ fun HomeScreen(navController: NavController) {
             HeartRateRow()
         }
     }
+}
+
+
+@Preview
+@Composable
+fun HomeScreenPreview(){
+    HomeScreen(navController = rememberNavController())
 }
 
 

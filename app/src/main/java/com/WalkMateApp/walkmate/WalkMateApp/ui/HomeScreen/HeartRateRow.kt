@@ -26,7 +26,7 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 fun HeartRateRow(){
     Row(
         modifier = Modifier
-            .padding(16.dp)
+            .padding(top = 16.dp)
             .background(TwilightBlue, shape = RoundedCornerShape(10.dp))
             .padding(horizontal = 16.dp, vertical = 12.dp) // Adjusted padding
             .fillMaxWidth(),

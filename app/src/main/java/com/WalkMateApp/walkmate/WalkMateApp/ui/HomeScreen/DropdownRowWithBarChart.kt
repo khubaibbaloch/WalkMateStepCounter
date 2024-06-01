@@ -78,8 +78,9 @@ fun DropdownRowWithBarChart() {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
-            .background(TwilightBlue, shape = RoundedCornerShape(8.dp))
+            .padding(top = 16.dp)
+            .background(TwilightBlue,
+                shape = RoundedCornerShape(8.dp))
             .padding(16.dp)
     ) {
         Row(

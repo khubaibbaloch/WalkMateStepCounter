@@ -19,3 +19,8 @@ val TwilightBlue= Color(0xFF151e2d)
 
 //Iconcolor
 val Orange = Color(0xFFF8531F)
+
+//Progress colors
+val ProgressColor1 = Color(0XFFe07a51)
+val ProgressColor2 = Color(0XFFdc7a78)
+val ProgressColor3 = Color(0XFFdf7681)

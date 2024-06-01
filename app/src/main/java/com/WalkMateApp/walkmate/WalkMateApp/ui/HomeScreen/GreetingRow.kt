@@ -1,6 +1,7 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,8 +25,7 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 fun GreetingRow(){
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
+            .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(
@@ -33,26 +33,29 @@ fun GreetingRow(){
         ) {
             Text(
                 text = "Hello, Jenifer", style = TextStyle(
-                    fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold
+                    fontSize = 16.sp,
+                    color = Color.White, fontWeight = FontWeight.SemiBold
                 )
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = "Mon,16 May 2022",
-                style = TextStyle(fontSize = 14.sp, color = Color.White),
+                style = TextStyle(fontSize = 14.sp,
+                    color = Color.White),
             )
         }
 
-        Row(
+        Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10))
-                .background(TwilightBlue),
-            verticalAlignment = Alignment.CenterVertically
+                .background(TwilightBlue)
+                .padding(14.dp),
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = "Goal: 8000 steps",
-                modifier = Modifier.padding(16.dp),
-                style = TextStyle(fontSize = 14.sp, color = Color.White)
+                style = TextStyle(fontSize = 14.sp,
+                    color = Color.White)
             )
         }
     }
