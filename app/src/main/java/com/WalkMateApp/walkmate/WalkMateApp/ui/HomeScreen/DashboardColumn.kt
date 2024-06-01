@@ -27,6 +27,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,13 +60,11 @@ import kotlin.math.cos
 import kotlin.math.sin
 
 @Composable
-fun DashboardColumn() {
-
-    var isWalking by remember { mutableStateOf(false) }
-
+fun DashboardColumn(
+    isWalking:MutableState<Boolean>
+) {
     Column(
         modifier = Modifier
-            .padding(top = 24.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -91,7 +90,7 @@ fun DashboardColumn() {
                 indicatorValue = stepsWalked,
                 foregroundIndicatorStrokeWidth = 26f,
                 maxIndicatorValue = targetSteps,
-                isWalking = isWalking
+                isWalking = isWalking.value
             )
 
             Column(
@@ -115,140 +114,6 @@ fun DashboardColumn() {
                     tint = Color.White
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(12.dp))
-
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(54.dp)
-                .shadow(
-                    10.dp,
-                    ambientColor = ProgressColor2,
-                    spotColor = ProgressColor1,
-                    shape = CircleShape
-                )
-                .background(
-                    brush =
-                    Brush.linearGradient(
-                        listOf(
-                            ProgressColor1,
-                            ProgressColor3
-                        )
-                    )
-                )
-                .clickable {
-                    isWalking = !isWalking
-                }
-        ) {
-            Icon(
-                painter = painterResource(
-                    id =
-                    if (isWalking) R.drawable.pauseicon else R.drawable.playicon
-                ),
-                contentDescription = "Play",
-                tint = Color.White,
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp)
-            .background(
-                color = TwilightBlue,
-                shape = RoundedCornerShape(8.dp)
-            )
-
-            .padding(vertical = 12.dp, horizontal = 6.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.calories),
-                contentDescription = "Favorite",
-                tint = Color.Red,
-                modifier = Modifier.size(25.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "120",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            //Icon(Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
-            Text(
-                text = "Cal", fontSize = 14.sp, color = Color.Red,
-            )
-        }
-
-        VerticalDivider(
-            color = Color.LightGray,
-            modifier = Modifier.height(90.dp)
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.time),
-                contentDescription = "Favorite",
-                tint = Color.Cyan,
-                modifier = Modifier.size(25.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "14:08",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            //Icon(Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
-            Text(
-                text = "Min", fontSize = 14.sp, color = Color.Cyan
-            )
-        }
-
-        VerticalDivider(
-            color = Color.LightGray,
-            modifier = Modifier.height(90.dp)
-        )
-
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.location),
-                contentDescription = "Favorite",
-                tint = Color.Green,
-                modifier = Modifier.size(25.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "2.6",
-                fontSize = 16.sp,
-                color = Color.White,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            //Icon(Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
-            Text(
-                text = "K.M", fontSize = 14.sp, color = Color.Green
-            )
         }
     }
 }
