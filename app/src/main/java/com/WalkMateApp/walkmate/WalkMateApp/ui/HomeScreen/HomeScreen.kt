@@ -3,13 +3,20 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideOut
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -24,9 +31,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -55,6 +64,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -109,62 +119,144 @@ fun HomeScreen(navController: NavController) {
         ) {
             GreetingRow()
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
 
             if (!isWalking.value) {
-                DashboardColumn(
-                    isWalking
-                )
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        contentAlignment = Alignment.Center,
+                        modifier =
+                        Modifier.size(220.dp)
+                    ) {
+
+                        val targetSteps = 8000
+                        val stepsWalked = 5500
+
+                        // Steps walked Progress
+                        CustomCircularProgress(
+                            canvasSize = 220.dp,
+                            indicatorValue = stepsWalked,
+                            foregroundIndicatorStrokeWidth = 26f,
+                            maxIndicatorValue = targetSteps,
+                            isWalking = isWalking.value
+                        )
+
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            modifier = Modifier
+                                .padding(8.dp)
+                                .align(Alignment.Center)
+                        ) {
+                            Text(
+                                text = "3,600", style = TextStyle(
+                                    fontSize = 18.sp,
+                                    color = Color.White,
+                                    fontWeight = FontWeight.Bold
+                                )
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Icon(
+                                painter = painterResource(id = R.drawable.footsteps),
+                                contentDescription = "Done",
+                                modifier = Modifier.size(45.dp),
+                                tint = Color.White
+                            )
+                        }
+                    }
+                }
             } else {
                 AnimatedVisibility(
                     visible = isWalking.value,
                     enter = fadeIn(),
                     exit = fadeOut() + shrinkVertically()
                 ) {
-                    Box(
-                        modifier = Modifier.size(330.dp),
-                        contentAlignment = Alignment.Center
+
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(330.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        DelayedCustomDesign(260.dp, 200)
-                        DelayedCustomDesign(220.dp, 150)
-                        DelayedCustomDesign(170.dp, 100)
-                        DelayedCustomDesign(130.dp, 50)
-                        DelayedCustomDesign(90.dp, 0)
-                        Icon(
-                            painter = painterResource(id = R.drawable.footsteps),
-                            contentDescription = "",
-                            modifier = Modifier.size(34.dp),
-                            tint = Color.White
+//                        val slideAnimation by rememberInfiniteTransition(label = "").animateFloat(
+//                            initialValue = -50f,
+//                            targetValue = 0f,
+//                            animationSpec = infiniteRepeatable(
+//                                animation = tween(durationMillis = 1000),
+//                                repeatMode = RepeatMode.Reverse
+//                            )
+//                        )
+
+                        val slideAnimation by rememberInfiniteTransition(label = "").animateFloat(
+                            initialValue = -50f,
+                            targetValue = 0f,
+                            animationSpec = infiniteRepeatable(
+                                animation = tween(durationMillis = 1000),
+                                repeatMode = RepeatMode.Reverse
+                            )
                         )
+
+                        Box(
+                            contentAlignment = Alignment.Center
+                        ) {
+                            DelayedCustomDesign(260.dp, 310)
+                            DelayedCustomDesign(220.dp, 260)
+                            DelayedCustomDesign(170.dp, 190)
+                            DelayedCustomDesign(130.dp, 120)
+                            DelayedCustomDesign(90.dp, 50)
+
+                            Icon(
+                                painter = painterResource(id = R.drawable.footsteps),
+                                contentDescription = "",
+                                modifier = Modifier.size(34.dp),
+                                tint = Color.White
+                            )
+                        }
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 36.dp)
+                                .offset(y = with(LocalDensity.current) { slideAnimation.toDp() }),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.footsteps),
+                                contentDescription = "",
+                                modifier = Modifier
+                                    .size(34.dp),
+                                tint = Color.White
+                            )
+                            Spacer(modifier = Modifier.width(6.dp))
+
+                            // Text sliding animation
+                            Text(
+                                text = "3600",
+                                color = Color.White,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Bold,
+                                modifier = Modifier
+                            )
+                        }
                     }
                 }
             }
 
-            if (isWalking.value) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 0.dp, bottom = 16.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.footsteps),
-                        contentDescription = "",
-                        tint = Color.White,
-                        modifier = Modifier.size(24.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(12.dp))
-
-                    Text(text = "3600")
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
+            val topPadding by animateDpAsState(
+                if (!isWalking.value) 16.dp else 24.dp,
+                animationSpec = tween(durationMillis = 1100)
+            )
 
             Row(
                 modifier = Modifier
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .padding(top = topPadding),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Box(
@@ -203,15 +295,121 @@ fun HomeScreen(navController: NavController) {
                 }
             }
 
-            AnimatedVisibility(visible = isWalking.value) {
 
+            // Heart rate etc
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp)
+                    .background(
+                        color = TwilightBlue,
+                        shape = RoundedCornerShape(8.dp)
+                    )
+
+                    .padding(vertical = 12.dp, horizontal = 6.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.calories),
+                        contentDescription = "Favorite",
+                        tint = Color.Red,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "120",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = "Cal", fontSize = 14.sp, color = Color.Red,
+                    )
+                }
+
+                VerticalDivider(
+                    color = Color.LightGray,
+                    modifier = Modifier.height(90.dp)
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.time),
+                        contentDescription = "Favorite",
+                        tint = Color.Cyan,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "14:08",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    //Icon(Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
+                    Text(
+                        text = "Min", fontSize = 14.sp, color = Color.Cyan
+                    )
+                }
+
+                VerticalDivider(
+                    color = Color.LightGray,
+                    modifier = Modifier.height(90.dp)
+                )
+
+                Column(
+                    modifier = Modifier.weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.location),
+                        contentDescription = "Favorite",
+                        tint = Color.Green,
+                        modifier = Modifier.size(25.dp)
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = "2.6",
+                        fontSize = 16.sp,
+                        color = Color.White,
+                        fontWeight = FontWeight.Bold
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    //Icon(Icons.Default.Star, contentDescription = "Star", tint = Color.Yellow)
+                    Text(
+                        text = "K.M", fontSize = 14.sp, color = Color.Green
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
-            DataDetailsRow()
-
-            if (!isWalking.value) {
+            AnimatedVisibility(
+                enter = fadeIn() + expandVertically(
+                    animationSpec = tween(1000)
+                ),
+                exit = fadeOut() + shrinkVertically(
+                    animationSpec = tween(1000)
+                ),
+                visible = !isWalking.value,
+            ) {
                 DropdownRowWithBarChart()
+            }
+
+            AnimatedVisibility(
+                visible = !isWalking.value,
+            ) {
                 HeartRateRow()
             }
         }
