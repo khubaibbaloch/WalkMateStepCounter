@@ -2,7 +2,10 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -103,7 +106,9 @@ fun HomeScreen(navController: NavController) {
         topBar = {
             if (!isWalking.value) {
                 HomeScreenTopBar(
-                    onMenuClick = { /*TODO*/ },
+                    onMenuClick = {
+
+                    },
                     onProfileClick = {})
             }
         },
@@ -121,68 +126,68 @@ fun HomeScreen(navController: NavController) {
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            if (!isWalking.value) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Box(
-                        contentAlignment = Alignment.Center,
-                        modifier =
-                        Modifier.size(220.dp)
-                    ) {
-
-                        val targetSteps = 8000
-                        val stepsWalked = 5500
-
-                        // Steps walked Progress
-                        CustomCircularProgress(
-                            canvasSize = 220.dp,
-                            indicatorValue = stepsWalked,
-                            foregroundIndicatorStrokeWidth = 26f,
-                            maxIndicatorValue = targetSteps,
-                            isWalking = isWalking.value
-                        )
-
+            Crossfade(
+                animationSpec = tween(400),
+                targetState = isWalking.value) { target ->
+                when (target) {
+                    false -> {
                         Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .padding(8.dp)
-                                .align(Alignment.Center)
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
-                            Text(
-                                text = "3,600", style = TextStyle(
-                                    fontSize = 18.sp,
-                                    color = Color.White,
-                                    fontWeight = FontWeight.Bold
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier =
+                                Modifier.size(220.dp)
+                            ) {
+
+                                val targetSteps = 8000
+                                val stepsWalked = 5500
+
+                                // Steps walked Progress
+                                CustomCircularProgress(
+                                    canvasSize = 220.dp,
+                                    indicatorValue = stepsWalked,
+                                    foregroundIndicatorStrokeWidth = 26f,
+                                    maxIndicatorValue = targetSteps,
+                                    isWalking = isWalking.value
                                 )
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            Icon(
-                                painter = painterResource(id = R.drawable.footsteps),
-                                contentDescription = "Done",
-                                modifier = Modifier.size(45.dp),
-                                tint = Color.White
-                            )
+
+                                Column(
+                                    horizontalAlignment = Alignment.CenterHorizontally,
+                                    modifier = Modifier
+                                        .padding(8.dp)
+                                        .align(Alignment.Center)
+                                ) {
+                                    Text(
+                                        text = "3,600", style = TextStyle(
+                                            fontSize = 18.sp,
+                                            color = Color.White,
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                    Spacer(modifier = Modifier.height(16.dp))
+                                    Icon(
+                                        painter = painterResource(id = R.drawable.footsteps),
+                                        contentDescription = "Done",
+                                        modifier = Modifier.size(45.dp),
+                                        tint = Color.White
+                                    )
+                                }
+                            }
                         }
                     }
-                }
-            } else {
-                AnimatedVisibility(
-                    visible = isWalking.value,
-                    enter = fadeIn(),
-                    exit = fadeOut() + shrinkVertically()
-                ) {
 
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(330.dp),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
+                    true -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(if(isWalking.value) 330.dp else 0.dp),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 //                        val slideAnimation by rememberInfiniteTransition(label = "").animateFloat(
 //                            initialValue = -50f,
 //                            targetValue = 0f,
@@ -192,71 +197,68 @@ fun HomeScreen(navController: NavController) {
 //                            )
 //                        )
 
-                        val slideAnimation by rememberInfiniteTransition(label = "").animateFloat(
-                            initialValue = -50f,
-                            targetValue = 0f,
-                            animationSpec = infiniteRepeatable(
-                                animation = tween(durationMillis = 1000),
-                                repeatMode = RepeatMode.Reverse
+                            val slideAnimation by rememberInfiniteTransition(label = "").animateFloat(
+                                initialValue = -50f,
+                                targetValue = 0f,
+                                animationSpec = infiniteRepeatable(
+                                    animation = tween(durationMillis = 1000),
+                                    repeatMode = RepeatMode.Reverse
+                                )
                             )
-                        )
 
-                        Box(
-                            contentAlignment = Alignment.Center
-                        ) {
-                            DelayedCustomDesign(260.dp, 310)
-                            DelayedCustomDesign(220.dp, 260)
-                            DelayedCustomDesign(170.dp, 190)
-                            DelayedCustomDesign(130.dp, 120)
-                            DelayedCustomDesign(90.dp, 50)
+                            Box(
+                                contentAlignment = Alignment.Center
+                            ) {
+                                DelayedCustomDesign(260.dp, 310)
+                                DelayedCustomDesign(220.dp, 260)
+                                DelayedCustomDesign(170.dp, 190)
+                                DelayedCustomDesign(130.dp, 120)
+                                DelayedCustomDesign(90.dp, 50)
 
-                            Icon(
-                                painter = painterResource(id = R.drawable.footsteps),
-                                contentDescription = "",
-                                modifier = Modifier.size(34.dp),
-                                tint = Color.White
-                            )
-                        }
+                                Icon(
+                                    painter = painterResource(id = R.drawable.footsteps),
+                                    contentDescription = "",
+                                    modifier = Modifier.size(34.dp),
+                                    tint = Color.White
+                                )
+                            }
 
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 36.dp)
-                                .offset(y = with(LocalDensity.current) { slideAnimation.toDp() }),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.Center
-                        ) {
-                            Icon(
-                                painter = painterResource(id = R.drawable.footsteps),
-                                contentDescription = "",
+                            Row(
                                 modifier = Modifier
-                                    .size(34.dp),
-                                tint = Color.White
-                            )
-                            Spacer(modifier = Modifier.width(6.dp))
+                                    .fillMaxWidth()
+                                    .padding(top = 36.dp)
+                                    .offset(y = with(LocalDensity.current) { slideAnimation.toDp() }),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center
+                            ) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.footsteps),
+                                    contentDescription = "",
+                                    modifier = Modifier
+                                        .size(34.dp),
+                                    tint = Color.White
+                                )
+                                Spacer(modifier = Modifier.width(6.dp))
 
-                            // Text sliding animation
-                            Text(
-                                text = "3600",
-                                color = Color.White,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Bold,
-                                modifier = Modifier
-                            )
+                                // Text sliding animation
+                                Text(
+                                    text = "3600",
+                                    color = Color.White,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    modifier = Modifier
+                                )
+                            }
                         }
                     }
                 }
             }
 
-            val topPadding by animateDpAsState(
-                if (!isWalking.value) 16.dp else 24.dp,
-                animationSpec = tween(durationMillis = 1100)
-            )
 
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = topPadding),
+                    .padding(top = 24.dp),
                 horizontalArrangement = Arrangement.Center
             ) {
                 Box(

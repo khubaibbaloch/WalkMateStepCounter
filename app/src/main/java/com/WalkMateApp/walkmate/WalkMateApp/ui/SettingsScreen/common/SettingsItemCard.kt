@@ -2,6 +2,7 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,15 +32,19 @@ fun SettingsItemCard(
     icon: Int = R.drawable.footstepsicon,
     iconColor: Color = Color.Cyan,
     iconSize: Dp = 20.dp,
-    mainText:String = "",
-    smallText:String = "",
+    mainText: String = "",
+    smallText: String = "",
     @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+    onItemClick: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .height(120.dp)
             .clip(RoundedCornerShape(8.dp))
             .background(TwilightBlue)
+            .clickable {
+                onItemClick()
+            }
             .padding(16.dp)
     ) {
         Box(
@@ -61,14 +66,18 @@ fun SettingsItemCard(
 
         Spacer(modifier = Modifier.height(4.dp))
 
-        Text(text = mainText,
+        Text(
+            text = mainText,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.LightGray)
+            color = Color.LightGray
+        )
 
-        Text(text = smallText,
+        Text(
+            text = smallText,
             fontSize = 12.sp,
             fontWeight = FontWeight.Normal,
-            color = Color.Gray,)
+            color = Color.Gray,
+        )
     }
 }

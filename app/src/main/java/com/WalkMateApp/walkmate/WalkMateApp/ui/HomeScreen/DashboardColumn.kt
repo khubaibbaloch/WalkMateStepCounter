@@ -160,9 +160,6 @@ fun CustomCircularProgress(
         animationSpec = tween(1000)
     )
 
-    val shadowSize = animateShadowSize(isWalking)
-    val shadowColor = if (isWalking) ProgressColor2 else Color.Transparent
-
     Column(
         modifier = Modifier
             .size(canvasSize)
@@ -180,29 +177,12 @@ fun CustomCircularProgress(
                     indicatorStrokeWidth = foregroundIndicatorStrokeWidth
                 )
             }
-            .shadow(
-                shadowSize.value.toDp(),
-                spotColor = shadowColor,
-                shape = CircleShape
-            )
+
     ) {
 
     }
 }
 
-@Composable
-private fun animateShadowSize(isWalking: Boolean): Animatable<Float, AnimationVector1D> {
-    val animatableSize = remember { Animatable(initialValue = if (isWalking) 200f else 0f) }
-    LaunchedEffect(isWalking) {
-        animatableSize.animateTo(if (isWalking) 200f else 80f, animationSpec = tween(300))
-    }
-    return animatableSize
-}
-
-@Composable
-private fun Float.toDp(): Dp {
-    return with(LocalDensity.current) { this@toDp.dp }
-}
 
 fun DrawScope.backgroundIndicator(
     componentSize: Size,
