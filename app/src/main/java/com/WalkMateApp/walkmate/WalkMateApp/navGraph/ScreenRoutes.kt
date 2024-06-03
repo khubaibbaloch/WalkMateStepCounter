@@ -5,4 +5,7 @@ sealed class ScreenRoutes(val route:String) {
     data object SettingsScreen:ScreenRoutes("SettingsScreenRoute")
 
     data object ProfileScreen:ScreenRoutes("ProfileScreenRoute")
+    data object StatisticsScreen:ScreenRoutes("StatisticsScreenRoute")
+    data object GenderScreen:ScreenRoutes("GenderScreenRoute")
+    data object HeightScreen:ScreenRoutes("HeightScreenRoute")
 }
