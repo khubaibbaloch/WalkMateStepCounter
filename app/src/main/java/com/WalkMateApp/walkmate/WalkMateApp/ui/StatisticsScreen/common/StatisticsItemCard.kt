@@ -1,4 +1,4 @@
-package com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common
+package com.WalkMateApp.walkmate.WalkMateApp.ui.StatisticsScreen.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -28,7 +28,7 @@ import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 @Composable
-fun SettingsItemCard(
+fun StatisticsItemCard(
     icon: Int = R.drawable.footstepsicon,
     iconColor: Color = Color.Cyan,
     iconSize: Dp = 20.dp,

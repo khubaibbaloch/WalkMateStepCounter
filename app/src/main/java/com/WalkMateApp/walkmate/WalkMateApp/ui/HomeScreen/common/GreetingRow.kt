@@ -1,4 +1,4 @@
-package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
+package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
