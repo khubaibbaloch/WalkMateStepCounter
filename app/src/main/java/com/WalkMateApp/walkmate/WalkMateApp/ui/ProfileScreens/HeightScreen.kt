@@ -15,12 +15,16 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +35,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -38,12 +43,17 @@ import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileTopBar
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.HeaderText
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.MeasurementInputField
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.ToggleButtonRow
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HeightScreen(navController: NavController) {
-    var selectedGender =
-        remember { mutableStateOf("") } // Maintain the state of the selected gender
+    var isCmSelected = remember { mutableStateOf(true) }
+    var heightTextField = remember { mutableStateOf("") }
+
     Scaffold(
         topBar = {
             ProfileTopBar(
@@ -52,99 +62,64 @@ fun HeightScreen(navController: NavController) {
                 }
             )
         }
-    ) { innerpaddind ->
+    ) { innerpadding ->
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerpaddind)
-                .background(MidnightBlue),
+                .background(MidnightBlue)
+                .padding(innerpadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
-            Text(
-                text = "How tall are you?",
-                modifier = Modifier.padding(bottom = 16.dp),
-                style = TextStyle(
-                    color = Color.White,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold
-                )
+            HeaderText(
+                title = "How tall are you?",
+                description = "Distance & speed calculation needs it"
             )
-            Text(
-                text = "Distance & speed calculation needs it",
-                modifier = Modifier.padding(start = 16.dp, end = 16.dp, bottom = 32.dp),
-                style = TextStyle(color = Color.White, fontSize = 16.sp),
-                textAlign = TextAlign.Center // Center the text within the column
+            ToggleButtonRow(
+                isUnitSelected = isCmSelected.value,
+                onToggle = { isSelected ->
+                    isCmSelected.value = isSelected
+                },
+                unitType1 = "CM",
+                unitType2 = "IN"
             )
-            var isCmSelected = remember { mutableStateOf(true) }
+            MeasurementInputField(value = heightTextField.value,
+                onValueChange = { newValue ->
+                heightTextField.value = newValue
+            }, label = "Enter Height")
 
-            Row(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(30))
-                    .padding(top = 4.dp, bottom = 4.dp), // Padding to separate buttons from the border
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Button(
-                    onClick = { isCmSelected.value = true },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(30))
-                       // .border(width = 1.dp, color = if (isCmSelected.value) Color.Transparent else Color.Blue)
-                        .background(if (isCmSelected.value) Color.Gray else Color.Transparent),
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Transparent)
-                ) {
-                    Text(text = "CM", color = if (isCmSelected.value) Color.Black else Color.White )
-                }
-
-                Spacer(modifier = Modifier.width(8.dp)) // Spacer to add space between the buttons
-
-                Button(
-                    onClick = { isCmSelected.value = false },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(40.dp)
-                        .clip(RoundedCornerShape(30))
-                       // .border(width = 1.dp, color = if (isCmSelected.value) Color.Blue else Color.Transparent)
-                        .background(if (isCmSelected.value) Color.Transparent else Color.Gray),
-                    colors = ButtonDefaults.buttonColors(containerColor  = Color.Transparent)
-                ) {
-                    Text(text = "IN", color = if (isCmSelected.value) Color.White else Color.Black)
-                }
-            }
-
-
-
-
+           /* HeightInputField(heightTextField.value) { newValue ->
+                heightTextField.value = newValue
+            }*/
             Spacer(modifier = Modifier.weight(1f))
+            PrivacyNoticeAndContinueButton(onNavigateClick = { navController.navigate(ScreenRoutes.WeightScreen.route) })
+        }
+    }
+}
 
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
+@Composable
+fun PrivacyNoticeAndContinueButton(onNavigateClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        Text(
+            text = "Your privacy is paramount to us. We never share your personal information with any third parties",
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+            style = TextStyle(color = Color.White, fontSize = 12.sp),
+            textAlign = TextAlign.Center
+        )
 
-                Text(
-                    text = "Your privacy is paramount to us. we never share your personal information with any third parties",
-                    modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-                    style = TextStyle(color = Color.White, fontSize = 12.sp),
-                    textAlign = TextAlign.Center
-                )
-
-                Button(
-                    onClick = { },
-                    modifier = Modifier
-                        .padding(start = 16.dp, end = 16.dp, bottom = 16.dp, top = 8.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(10))
-                        .background(Color.Gray),
-                    colors = ButtonDefaults.buttonColors(Color.Transparent)
-                ) {
-                    Text(text = "Continue", color = Color.White)
-                }
-            }
-
+        Button(
+            onClick = { onNavigateClick() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            colors = ButtonDefaults.buttonColors(Color.Gray),
+            shape = RoundedCornerShape(10),
+        ) {
+            Text(text = "Continue", color = Color.White)
         }
     }
 }

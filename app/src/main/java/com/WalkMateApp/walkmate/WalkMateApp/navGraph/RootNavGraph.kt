@@ -8,13 +8,15 @@ import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.HomeScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.ProfileScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.GenderScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.HeightScreen
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.SetGoalScreen
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.WeightScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.SettingsScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.StatisticsScreen.StatisticsScreen
 
 
 @Composable
 fun RootNavGraph(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = ScreenRoutes.HeightScreen.route) {
+    NavHost(navController = navController, startDestination = ScreenRoutes.GenderScreen.route) {
         composable(ScreenRoutes.HomeScreen.route) {
             HomeScreen(navController = navController)
         }
@@ -34,6 +36,12 @@ fun RootNavGraph(navController: NavHostController) {
         }
         composable(ScreenRoutes.HeightScreen.route) {
             HeightScreen(navController = navController)
+        }
+        composable(ScreenRoutes.WeightScreen.route) {
+            WeightScreen(navController = navController)
+        }
+        composable(ScreenRoutes.SetGoalScreen.route) {
+            SetGoalScreen(navController = navController)
         }
     }
 }

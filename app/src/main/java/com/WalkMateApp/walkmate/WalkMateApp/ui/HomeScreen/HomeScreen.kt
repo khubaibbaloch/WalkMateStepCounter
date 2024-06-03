@@ -86,7 +86,11 @@ import co.yml.charts.ui.barchart.models.BarChartType
 
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.CustomCircularProgress
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DataDetailsRow
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DropdownRowWithBarChart
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.GreetingRow
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.HeartRateRow
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.HomeScreenTopBar
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.ProgressColor1
