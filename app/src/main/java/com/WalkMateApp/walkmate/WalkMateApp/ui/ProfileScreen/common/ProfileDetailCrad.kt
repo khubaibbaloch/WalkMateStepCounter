@@ -35,7 +35,11 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 
 @Composable
-fun ProfileDetailCard() {
+fun ProfileDetailCard(
+    onProfileImg: String,
+    userName: String,
+    age: String)
+{
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -50,7 +54,7 @@ fun ProfileDetailCard() {
                 .height(50.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = if (onProfileImg == "Male") R.drawable.man else R.drawable.female),
                 contentDescription = "",
                 modifier = Modifier.clip(CircleShape)
             )
@@ -59,14 +63,14 @@ fun ProfileDetailCard() {
 
             Column {
                 Text(
-                    text = "Parvez Mayar",
+                    text = userName,
                     color = Color.White.copy(.9f),
                     fontSize = 16.sp
                 )
 
 
                 Text(
-                    text = "Level 1",
+                    text = age,
                     color = Color.Gray,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
@@ -89,7 +93,7 @@ fun ProfileDetailCard() {
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(12.dp))
 
         val fullText = "Congo! You have completed your today's goal"

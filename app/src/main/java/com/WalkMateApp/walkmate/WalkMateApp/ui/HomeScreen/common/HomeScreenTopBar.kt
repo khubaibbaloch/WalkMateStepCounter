@@ -19,14 +19,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.WalkMateApp.walkmate.R
-import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopBar(
     onMenuClick:()->Unit,
-    onProfileClick:()->Unit
+    onProfileClick:()->Unit,
+    onProfileImg:String
 ){
     TopAppBar(
         title = { },
@@ -52,7 +52,7 @@ fun HomeScreenTopBar(
         },
         actions = {
 
-            Image(painter = painterResource(id = R.drawable.ic_launcher_background),
+            Image(painter = painterResource(id = if(onProfileImg == "Male") R.drawable.man else R.drawable.female),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .padding(end = 8.dp)

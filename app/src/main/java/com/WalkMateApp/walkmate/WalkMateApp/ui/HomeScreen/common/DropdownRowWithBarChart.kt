@@ -1,5 +1,6 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,32 +28,45 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.yml.charts.axis.AxisData
 import co.yml.charts.axis.DataCategoryOptions
+import co.yml.charts.common.model.Point
 import co.yml.charts.common.utils.DataUtils
 import co.yml.charts.ui.barchart.BarChart
 import co.yml.charts.ui.barchart.models.BarChartData
 import co.yml.charts.ui.barchart.models.BarChartType
+import co.yml.charts.ui.barchart.models.BarData
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
+import java.util.Random
 
 @Composable
-fun DropdownRowWithBarChart() {
+fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
     var expanded = remember { mutableStateOf(false) }
     var selectedText = remember { mutableStateOf("Today") }
 
+    val stepsMonday = viewModel.getStepsForDay("Monday")
+    val stepsTuesday = viewModel.getStepsForDay("Tuesday")
+    val stepsWednesday = viewModel.getStepsForDay("Wednesday")
+    val stepsThursday = viewModel.getStepsForDay("Thursday")
+    val stepsFriday = viewModel.getStepsForDay("Friday")
+    val stepsSaturday = viewModel.getStepsForDay("Saturday")
+    val stepsSunday = viewModel.getStepsForDay("Sunday")
+  //  val maxRange = 15000f
+    val maxRange = 15000f
+    val yStepSize = 5
 
-    val dataCategoryOptions = DataCategoryOptions(
-        false, true
+    val weekData = listOf(
+        1 to stepsMonday,
+        2 to stepsTuesday,
+        3 to stepsWednesday,
+        4 to stepsThursday,
+        5 to stepsFriday,
+        6 to stepsSaturday,
+        7 to stepsSunday
     )
 
+    val barChartData = convertWeekDataToBarData(weekData, maxRange, yStepSize)
+    val dayLabels = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
 
-    val barChartData = DataUtils.getBarChartData(
-        listSize = 31,
-        maxRange = 31,
-        barChartType = BarChartType.VERTICAL,
-        dataCategoryOptions = dataCategoryOptions
-    )
-    // Define xAxisData and yAxisData
-    val maxRange = 1000f
-    val yStepSize = 10
 
     val xAxisData = AxisData.Builder()
         .axisLineColor(Color.White)
@@ -62,7 +76,7 @@ fun DropdownRowWithBarChart() {
         .steps(barChartData.size - 1)
         .bottomPadding(10.dp)
         .startDrawPadding(18.dp)
-        .labelData { index -> "$index" }
+        .labelData { index -> dayLabels[index] }
         .build()
 
     val yAxisData = AxisData.Builder()
@@ -70,7 +84,7 @@ fun DropdownRowWithBarChart() {
         .axisLineColor(Color.White)
         .axisLabelColor(Color.White)
         .steps(yStepSize)
-        .labelAndAxisLinePadding(20.dp)
+        .labelAndAxisLinePadding(30.dp)
         .axisOffset(20.dp)
         .labelData { index -> (index * (maxRange / yStepSize)).toString() }
         .build()
@@ -80,8 +94,10 @@ fun DropdownRowWithBarChart() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp)
-            .background(TwilightBlue,
-                shape = RoundedCornerShape(8.dp))
+            .background(
+                TwilightBlue,
+                shape = RoundedCornerShape(8.dp)
+            )
             .padding(16.dp)
     ) {
         Row(
@@ -99,17 +115,18 @@ fun DropdownRowWithBarChart() {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = selectedText.value,
+                  //  text = selectedText.value,
+                    text = "Weekly",
                     fontSize = 14.sp,
                     color = Color.Green
                 )
-                IconButton(onClick = { expanded.value = !expanded.value }) {
+                /*IconButton(onClick = { expanded.value = !expanded.value }) {
                     Icon(
                         imageVector = if (expanded.value) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = "Dropdown Arrow",
                         tint = Color.White
                     )
-                }
+                }*/
                 DropdownMenu(
                     expanded = expanded.value,
                     onDismissRequest = { expanded.value = false }
@@ -153,10 +170,43 @@ fun DropdownRowWithBarChart() {
                 backgroundColor = TwilightBlue,
                 chartData = barChartData,
                 xAxisData = xAxisData,
-                yAxisData = yAxisData
+                yAxisData = yAxisData,
+                barChartType= BarChartType.VERTICAL
             )
         )
 
     }
 
+}
+fun convertWeekDataToBarData(weekData: List<Pair<Int, Int>>, maxRange: Float, yStepSize: Int): List<BarData> {
+    val barDataList = mutableListOf<BarData>()
+
+    weekData.forEach { (listRange, steps) ->
+        // Calculate the fraction of the total range
+        val fractionOfMaxRange = steps / maxRange
+
+        // Calculate the value on the chart based on the number of steps in the y-axis
+        val valueOnChart = fractionOfMaxRange * yStepSize
+        val point = Point(x = listRange.toFloat(), y = valueOnChart)
+        val label = listRange
+
+        // Generate a random color for the bar
+        val color = getRandomColor()
+
+        val barData = BarData(
+            point = point,
+            label = label.toString(),
+            color = color
+        )
+        barDataList.add(barData)
+    }
+    return barDataList
+}
+
+fun getRandomColor(): Color {
+    val random = Random()
+    val red = random.nextInt(256)
+    val green = random.nextInt(256)
+    val blue = random.nextInt(256)
+    return Color(red,green,blue)
 }

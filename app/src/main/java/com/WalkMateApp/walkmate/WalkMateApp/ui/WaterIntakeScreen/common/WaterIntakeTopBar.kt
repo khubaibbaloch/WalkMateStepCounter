@@ -1,10 +1,11 @@
-package com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common
+package com.WalkMateApp.walkmate.WalkMateApp.ui.WaterIntakeScreen.common
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -21,18 +22,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
-import com.WalkMateApp.walkmate.R
+import androidx.compose.ui.unit.sp
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsTopBar(
-    onBackArrowClick: () -> Unit,
-    onProfileClick: () -> Unit,
-    onProfileImg:String
+fun WaterIntakeTopBar(
+    onBackArrowClick: () -> Unit
 ) {
     TopAppBar(
         modifier = Modifier
@@ -55,33 +54,27 @@ fun SettingsTopBar(
             }
         },
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(1f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
+            Column(
             ) {
                 Text(
-                    text = "Settings",
-                    color = Color.White
+                    text = "Today",
+                    style = TextStyle(
+                        fontSize = 18.sp,
+                        color = Color.White
+                    )
+                )
+                Text(
+                    text = "Drink water",
+                    modifier = Modifier.padding(start = 4.dp),
+                    style = TextStyle(
+                        fontSize = 12.sp,
+                        color = Color.LightGray
+                    )
                 )
             }
         },
         actions = {
-            IconButton(
-                modifier = Modifier.size(48.dp),
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = TwilightBlue
-                ),
-                onClick = {
-                    onProfileClick()
-                })
-            {
-                Image(
-                    painter = painterResource(id = if(onProfileImg == "Male") R.drawable.man else R.drawable.female),
-                    contentDescription = "",
-                    modifier = Modifier.size(38.dp)
-                )
-            }
+
         }
     )
 }

@@ -11,11 +11,17 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileDetailCard
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileItemCard
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileTopBar
@@ -26,7 +32,17 @@ import com.WalkMateApp.walkmate.ui.theme.Purple80
 
 
 @Composable
-fun ProfileScreen(navController: NavController){
+fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
+
+    val caloriesBurned by viewModel.caloriesBurned.collectAsState()
+    val stepCount by viewModel.stepCount.collectAsState()
+    val heartRate = viewModel.heartRate.collectAsState()
+    val profileImg = viewModel.getGender()
+    val userName = viewModel.getName()
+    val age = viewModel.getAge()
+    val waterIntake by viewModel.waterIntake.collectAsState()
+    val waterIntakeInLiters = waterIntake / 1000.0
+
     Scaffold(
         topBar = {
             ProfileTopBar(
@@ -35,7 +51,7 @@ fun ProfileScreen(navController: NavController){
                 }
             )
         }
-    ){
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -47,14 +63,18 @@ fun ProfileScreen(navController: NavController){
                 )
                 .padding(it)
         ) {
-            ProfileDetailCard()
+            ProfileDetailCard(
+                onProfileImg = profileImg,
+                userName = userName,
+                age = age
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ){
+            ) {
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "About you",
@@ -77,11 +97,11 @@ fun ProfileScreen(navController: NavController){
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ){
+            ) {
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "Achievements",
-                    valueText = "7K",
+                    valueText = "$stepCount",
                     smallText = "Steps",
                     iconColor = Color.Yellow,
                     icon = R.drawable.medalicon,
@@ -90,7 +110,7 @@ fun ProfileScreen(navController: NavController){
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "Hydration",
-                    valueText = "1.5",
+                    valueText = "${waterIntakeInLiters}",
                     smallText = "Litres",
                     iconColor = Color.Cyan,
                     icon = R.drawable.dropicon,
@@ -104,11 +124,11 @@ fun ProfileScreen(navController: NavController){
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ){
+            ) {
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "Heart Rate",
-                    valueText = "75",
+                    valueText = "${heartRate.value}",
                     smallText = "bpm",
                     iconColor = Color.Red,
                     icon = R.drawable.heartbeaticon,
@@ -117,7 +137,7 @@ fun ProfileScreen(navController: NavController){
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "K.cal",
-                    valueText = "900",
+                    valueText = "${caloriesBurned}",
                     smallText = "",
                     iconColor = Orange,
                     icon = R.drawable.fireicon,

@@ -1,6 +1,8 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,9 +12,12 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
+import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -20,10 +25,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 @Composable
-fun HeartRateRow(){
+fun HeartRateAndWaterRow(
+    value: String,
+    imageRes: Int,
+    Tittle: String,
+    Check: Boolean,
+    onButtonClick: () -> Unit,
+) {
+
+
     Row(
         modifier = Modifier
             .padding(top = 16.dp)
@@ -32,33 +46,47 @@ fun HeartRateRow(){
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Icon(
-            painter = painterResource(id = R.drawable.heart),
-            contentDescription = "Start Icon",
-            tint = Color.Red,
-            modifier = Modifier.size(35.dp)
-        )
+        if (Check) {
+            Icon(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Icon",
+                tint = Color.Red,
+                modifier = Modifier.size(35.dp)
+            )
+        } else {
+            Image(
+                painter = painterResource(id = imageRes),
+                contentDescription = "Icon",
+                modifier = Modifier.size(35.dp)
+            )
+        }
+
 
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
-                text = "Heart Rate",
+                text = Tittle,
                 fontSize = 16.sp, // Set text size to 16
                 color = Color.White // Adjusted text color
             )
             Text(
-                text = "75 bmp",
-                fontSize = 16.sp, // Set text size to 16
-                color = Color.White // Adjusted text color
+                text = value,
+                fontSize = 14.sp, // Set text size to 16
+                color = Color.Gray // Adjusted text color
             )
         }
 
         Spacer(modifier = Modifier.weight(1f))
 
-        Icon(
-            Icons.Default.KeyboardArrowRight,
-            contentDescription = "End Icon",
-            tint = Color.White,
+        IconButton(
+            onClick = onButtonClick,
             modifier = Modifier.size(34.dp)
-        )
+        ) {
+            Icon(
+                Icons.Default.KeyboardArrowRight,
+                contentDescription = "End Icon",
+                tint = Color.White,
+                modifier = Modifier.size(34.dp)
+            )
+        }
     }
 }

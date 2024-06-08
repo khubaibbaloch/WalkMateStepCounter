@@ -1,5 +1,10 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
+import android.icu.text.CaseMap.Title
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -54,6 +59,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -67,6 +73,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -76,21 +83,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import co.yml.charts.axis.AxisData
-import co.yml.charts.axis.DataCategoryOptions
-import co.yml.charts.common.utils.DataUtils.getBarChartData
-import co.yml.charts.ui.barchart.BarChart
-import co.yml.charts.ui.barchart.models.BarChartData
 import co.yml.charts.ui.barchart.models.BarChartType
-
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.CustomCircularProgress
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DataDetailsRow
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DropdownRowWithBarChart
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.GreetingRow
-import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.HeartRateRow
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.HeartRateAndWaterRow
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.HomeScreenTopBar
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.ProgressColor1
@@ -100,20 +101,36 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 import kotlinx.coroutines.delay
 
 
+@SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavController) {
+fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
     val isWalking = remember { mutableStateOf(false) }
+    val caloriesBurned by viewModel.caloriesBurned.collectAsState()
+    val distanceCovered by viewModel.distanceCovered.collectAsState()
+    val stepCount by viewModel.stepCount.collectAsState()
+    val stepGoal = viewModel.getStepGoal().toIntOrNull() ?: 0
+    val seconds by viewModel.seconds.collectAsState()
+    val minutes by viewModel.minutes.collectAsState()
+    val hours by viewModel.hours.collectAsState()
+    val heartRate = viewModel.heartRate.collectAsState()
+    val WaterGoal = viewModel.waterGoal.collectAsState()
+    val WaterIntake = viewModel.waterIntake.collectAsState()
+    val context = LocalContext.current
+
+
 
     Scaffold(
         topBar = {
             if (!isWalking.value) {
                 HomeScreenTopBar(
                     onMenuClick = {
-
+                        navController.navigate(ScreenRoutes.SettingsScreen.route)
                     },
-                    onProfileClick = {})
+                    onProfileClick = { navController.navigate(ScreenRoutes.ProfileScreen.route) },
+                    viewModel.getGender()
+                )
             }
         },
     ) { innerPadding ->
@@ -126,13 +143,18 @@ fun HomeScreen(navController: NavController) {
                 .animateContentSize()
                 .verticalScroll(rememberScrollState()),
         ) {
-            GreetingRow()
+            GreetingRow(
+                setGoal = "Goal: ${viewModel.getStepGoal()} steps",
+                userName = "hello, ${viewModel.getName()}",
+                todayDate = viewModel.getCurrentDate()
+            )
 
             Spacer(modifier = Modifier.height(24.dp))
 
             Crossfade(
                 animationSpec = tween(400),
-                targetState = isWalking.value) { target ->
+                targetState = isWalking.value
+            ) { target ->
                 when (target) {
                     false -> {
                         Column(
@@ -153,9 +175,9 @@ fun HomeScreen(navController: NavController) {
                                 // Steps walked Progress
                                 CustomCircularProgress(
                                     canvasSize = 220.dp,
-                                    indicatorValue = stepsWalked,
+                                    indicatorValue = stepCount,
                                     foregroundIndicatorStrokeWidth = 26f,
-                                    maxIndicatorValue = targetSteps,
+                                    maxIndicatorValue = stepGoal,
                                     isWalking = isWalking.value
                                 )
 
@@ -166,7 +188,7 @@ fun HomeScreen(navController: NavController) {
                                         .align(Alignment.Center)
                                 ) {
                                     Text(
-                                        text = "3,600", style = TextStyle(
+                                        text = "${stepCount}", style = TextStyle(
                                             fontSize = 18.sp,
                                             color = Color.White,
                                             fontWeight = FontWeight.Bold
@@ -188,7 +210,7 @@ fun HomeScreen(navController: NavController) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(if(isWalking.value) 330.dp else 0.dp),
+                                .height(if (isWalking.value) 330.dp else 0.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -246,7 +268,7 @@ fun HomeScreen(navController: NavController) {
 
                                 // Text sliding animation
                                 Text(
-                                    text = "3600",
+                                    text = "${stepCount}",
                                     color = Color.White,
                                     fontSize = 16.sp,
                                     fontWeight = FontWeight.Bold,
@@ -328,7 +350,7 @@ fun HomeScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "120",
+                        text = "${caloriesBurned}",
                         fontSize = 16.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
@@ -358,7 +380,14 @@ fun HomeScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "14:08",
+                        text = " ${
+                            if (hours >= 1) String.format(
+                                "%01d:%02d:%02d",
+                                hours,
+                                minutes,
+                                seconds
+                            ) else String.format("%02d:%02d", minutes, seconds)
+                        }",
                         fontSize = 16.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
@@ -388,7 +417,7 @@ fun HomeScreen(navController: NavController) {
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        text = "2.6",
+                        text = "${distanceCovered}",
                         fontSize = 16.sp,
                         color = Color.White,
                         fontWeight = FontWeight.Bold
@@ -410,15 +439,56 @@ fun HomeScreen(navController: NavController) {
                 ),
                 visible = !isWalking.value,
             ) {
-                DropdownRowWithBarChart()
+                DropdownRowWithBarChart(viewModel)
             }
 
             AnimatedVisibility(
                 visible = !isWalking.value,
             ) {
-                HeartRateRow()
+                Column {
+
+                    HeartRateAndWaterRow(
+                        Tittle="Water Intake",
+                        imageRes = R.drawable.water_bottle_in_progress,
+                        value = "${WaterIntake.value}ml /${WaterGoal.value}ml",
+                        Check = false,
+                        onButtonClick = {navController.navigate(ScreenRoutes.WaterIntakeScreen.route)}
+                    )
+                    HeartRateAndWaterRow(
+                        Tittle="Heart Rate",
+                        imageRes = R.drawable.heart,
+                        value = "${heartRate.value} bpm",
+                        Check = true,
+                        onButtonClick = {}
+                    )
+                }
+
+
+
             }
         }
+
+
+        if (isWalking.value) {
+            viewModel.startStepCounter()
+            viewModel.startTimer()
+        } else {
+            viewModel.stopTimer()
+            viewModel.stopSensor()
+        }
+
+        if (stepCount == stepGoal) {
+            val alertDialog = AlertDialog.Builder(context)
+                .setTitle("Congratulations!")
+                .setMessage("You've achieved your step goal!")
+                .setPositiveButton("OK") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .create()
+
+            alertDialog.show()
+        }
+
     }
 }
 
@@ -428,7 +498,7 @@ fun CustomDesign(
     shadow: Dp,
     color1: Color,
     color2: Color,
-    colorAlpha: Float
+    colorAlpha: Float,
 ) {
     Spacer(
         modifier =
@@ -486,10 +556,6 @@ fun DelayedCustomDesign(size: Dp, delayMillis: Long) {
     }
 }
 
-@Preview
-@Composable
-fun HomeScreenPreview() {
-    HomeScreen(navController = rememberNavController())
-}
+
 
 

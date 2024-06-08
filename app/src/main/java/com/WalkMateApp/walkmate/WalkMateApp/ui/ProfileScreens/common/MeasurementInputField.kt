@@ -14,28 +14,29 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MeasurementInputField(value: String, onValueChange: (String) -> Unit,label:String) {
+fun MeasurementInputField(value: String, onValueChange: (String) -> Unit, label: String, isError: Boolean) {
     OutlinedTextField(
         value = value,
         onValueChange = { newValue ->
-            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\\.?\\d*\$"))) {
+            if (newValue.isEmpty() || newValue.matches(Regex("^\\d*\$"))) {
                 onValueChange(newValue)
             }
         },
-        label = { Text(text = label, color = Color.White) },
+        label = { Text(text = label, color = if (isError) Color.Red else Color.White) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp),
         textStyle = TextStyle(color = Color.White),
+        isError = isError,
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = Color.White,
-            unfocusedBorderColor = Color.White,
-            cursorColor = Color.White
+            focusedBorderColor = if (isError) Color.Red else Color.White,
+            unfocusedBorderColor = if (isError) Color.Red else Color.White,
+            cursorColor = if (isError) Color.Red else Color.White
         )
     )
 }

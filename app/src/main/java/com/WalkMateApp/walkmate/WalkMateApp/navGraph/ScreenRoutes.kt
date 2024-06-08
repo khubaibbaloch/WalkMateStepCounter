@@ -10,4 +10,6 @@ sealed class ScreenRoutes(val route:String) {
     data object HeightScreen:ScreenRoutes("HeightScreenRoute")
     data object WeightScreen:ScreenRoutes("WeightScreenRoute")
     data object SetGoalScreen:ScreenRoutes("SetGoalScreenRoute")
+    data object UserNameScreen:ScreenRoutes("SetUserNameScreenRoute")
+    data object WaterIntakeScreen:ScreenRoutes("WaterIntakeScreenRoute")
 }
