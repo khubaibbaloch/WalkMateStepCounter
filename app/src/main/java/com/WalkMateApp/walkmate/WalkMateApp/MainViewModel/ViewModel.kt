@@ -132,6 +132,11 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     private val _isUserAccountCreated= MutableStateFlow(false)
     val isUserAccountCreated: StateFlow<Boolean> = _isUserAccountCreated
 
+    // LiveData for Theme
+    private val _currentTheme = MutableStateFlow("")
+    val currentTheme: StateFlow<String> = _currentTheme
+
+
 
     init {
         // Initialize _stepCount with the saved count
@@ -144,7 +149,7 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         //updateTimerValues(elapsedTime)
 
         //reset the step days on monday
-        resetStepCountsIfNeeded()
+        resetStepCountsOnWeekend()
 
         //update the bpm
         estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
@@ -162,6 +167,8 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         resetWaterIntakeIfDayChanged()
 
         _isUserAccountCreated.value = getUserAccountCreated()
+
+        _currentTheme.value = getTheme()
 
     }
 
@@ -198,33 +205,58 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         sharedPreferencesHelper.saveData("stepCount", steps.toString())
     }*/
     fun saveStepCount(steps: Int) {
-        resetStepCountsIfNeeded()
-
         val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         sharedPreferencesHelper.saveData(currentDayOfWeek!!, steps.toString())
     }
-    fun resetStepCountsIfNeeded() {
-        val calendar = Calendar.getInstance()
-        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        val currentWeekStart = calendar.getFirstDayOfWeek()
+    fun resetDataOnDayChange() {
+        val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val lastRecordedDay = sharedPreferencesHelper.getData("lastRecordedDay", "0")
 
-        // Check if the reset has already been done for the current week
-        val resetDone = sharedPreferencesHelper.getBoolean("ResetDone", false)
+        if (currentDayOfWeek != lastRecordedDay) {
+            _stepCount.value = 0
+            updateCaloriesBurnedAndDistanceCovered()
+            resetElapsedTimeIfWeekChanged()
+            resetStepCountsOnWeekend()
 
-        if (currentDayOfWeek == currentWeekStart && !resetDone) {
-            // Reset step count to zero at the start of the week
-            sharedPreferencesHelper.saveData("Monday", "0")
-            sharedPreferencesHelper.saveData("Tuesday", "0")
-            sharedPreferencesHelper.saveData("Wednesday", "0")
-            sharedPreferencesHelper.saveData("Thursday", "0")
-            sharedPreferencesHelper.saveData("Friday", "0")
-            sharedPreferencesHelper.saveData("Saturday", "0")
-            sharedPreferencesHelper.saveData("Sunday", "0")
+            // Reset water intake
+            _waterIntake.value = 0
+            updateWaterIntake("0")
+            resetWaterIntakeIfDayChanged()
 
-            // Mark the reset as done for this week
-            sharedPreferencesHelper.saveBoolean("ResetDone", true)
+
+            sharedPreferencesHelper.saveData("lastRecordedDay", currentDayOfWeek!!)
         }
     }
+
+    fun resetStepCountsOnWeekend() {
+        val calendar = Calendar.getInstance()
+        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        val resetDone = sharedPreferencesHelper.getBoolean("ResetDone", false)
+
+        if (currentDayOfWeek == Calendar.MONDAY) {
+            if (!resetDone) {
+                // Reset step count to zero for all days of the week
+                sharedPreferencesHelper.saveData("Monday", "0")
+                sharedPreferencesHelper.saveData("Tuesday", "0")
+                sharedPreferencesHelper.saveData("Wednesday", "0")
+                sharedPreferencesHelper.saveData("Thursday", "0")
+                sharedPreferencesHelper.saveData("Friday", "0")
+                sharedPreferencesHelper.saveData("Saturday", "0")
+                sharedPreferencesHelper.saveData("Sunday", "0")
+
+                // Mark the reset as done for this week
+                sharedPreferencesHelper.saveBoolean("ResetDone", true)
+            }
+        } else {
+            if (resetDone) {
+                // Revert the reset flag if it's not Monday and reset has been done
+                sharedPreferencesHelper.saveBoolean("ResetDone", false)
+            }
+        }
+        Log.d("TAG", "resetStepCountsIfNeeded: $resetDone")
+    }
+
+
     fun updateStepCount(){
         _stepCount.value = getStepsForCurrentDay()
        // _stepCount.value = getSavedStepCount()
@@ -277,6 +309,10 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         _isUserAccountCreated.value = AccountCreated
         sharedPreferencesHelper.saveBoolean("AccountCreated", AccountCreated)
     }
+    fun updateTheme(newTheme:String) {
+        _currentTheme.value = newTheme
+        sharedPreferencesHelper.saveData("newTheme", newTheme)
+    }
 
 
 
@@ -318,10 +354,6 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
-    /*fun getSavedStepCount(): Int {
-        val savedStepCountString = sharedPreferencesHelper.getData("stepCount", "0")
-        return savedStepCountString.toIntOrNull() ?: 0
-    }*/
     fun getStepsForCurrentDay(): Int {
         val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         return sharedPreferencesHelper.getData(currentDayOfWeek!!, "0").toInt()
@@ -389,6 +421,9 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     }
     fun getUserAccountCreated():Boolean {
         return sharedPreferencesHelper.getBoolean("AccountCreated", false)
+    }
+    fun getTheme():String {
+         return sharedPreferencesHelper.getData("newTheme", "1")
     }
 
     fun startTimer() {

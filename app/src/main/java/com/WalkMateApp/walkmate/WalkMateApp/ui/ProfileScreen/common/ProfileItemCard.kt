@@ -2,6 +2,7 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,6 +25,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.Purple80
@@ -36,14 +38,16 @@ fun ProfileItemCard(
     valueText: String = "",
     smallText: String = "",
     iconSize: Dp = 20.dp,
-    iconColor:Color = Color.Cyan,
-    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier
+    onClick:()-> Unit,
+    @SuppressLint("ModifierParameter") modifier: Modifier = Modifier,
+
 ) {
     Column(
         modifier = modifier
             .height(110.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(TwilightBlue)
+            .background(WalkMateThemes.colorScheme.onBackground)
+            .clickable {  onClick() }
             .padding(16.dp)
     )
     {
@@ -53,14 +57,14 @@ fun ProfileItemCard(
             IconButton(
                 modifier = Modifier.size(34.dp),
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MidnightBlue
+                    containerColor =  WalkMateThemes.colorScheme.background
                 ),
                 onClick = { /*TODO*/ })
             {
                 Icon(
                     painter = painterResource(id = icon),
                     contentDescription = "",
-                    tint = iconColor,
+                    tint =  WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(iconSize)
                 )
             }
@@ -71,7 +75,7 @@ fun ProfileItemCard(
                 text = valueText,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Color.White.copy(.8f)
+                color = WalkMateThemes.colorScheme.textColor
             )
 
             Spacer(modifier = Modifier.width(4.dp))
@@ -79,7 +83,7 @@ fun ProfileItemCard(
             Text(
                 text = smallText,
                 fontSize = 12.sp,
-                color = Color.LightGray
+                color = WalkMateThemes.colorScheme.textColor
             )
         }
 

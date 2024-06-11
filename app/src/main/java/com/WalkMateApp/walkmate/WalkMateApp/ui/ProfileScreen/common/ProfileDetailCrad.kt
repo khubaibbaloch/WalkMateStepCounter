@@ -29,6 +29,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
@@ -38,14 +39,17 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 fun ProfileDetailCard(
     onProfileImg: String,
     userName: String,
-    age: String)
+    age: String,
+    checkGoal:Boolean,
+    endingMessage:String,
+    onProfileUpdate:() -> Unit)
 {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(TwilightBlue)
+            .background(WalkMateThemes.colorScheme.onBackground)
             .padding(16.dp)
     ) {
         Row(
@@ -64,14 +68,14 @@ fun ProfileDetailCard(
             Column {
                 Text(
                     text = userName,
-                    color = Color.White.copy(.9f),
+                    color = WalkMateThemes.colorScheme.textColor,
                     fontSize = 16.sp
                 )
 
 
                 Text(
                     text = age,
-                    color = Color.Gray,
+                    color = WalkMateThemes.colorScheme.textColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -81,14 +85,14 @@ fun ProfileDetailCard(
 
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MidnightBlue
+                    containerColor =  WalkMateThemes.colorScheme.background
                 ),
-                onClick = { /*TODO*/ })
+                onClick = { onProfileUpdate()})
             {
                 Icon(
                     painter = painterResource(id = R.drawable.editicon),
                     contentDescription = "",
-                    tint = Color.White,
+                    tint =  WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -99,22 +103,31 @@ fun ProfileDetailCard(
         val fullText = "Congo! You have completed your today's goal"
         val coloredText = "Congo!"
 
-        Text(
-            buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = Color.Yellow,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
-                    )
-                ) {
-                    append(coloredText)
-                }
-                append(fullText.substring(coloredText.length))
-            },
-            fontSize = 12.sp,
-            color = Color.LightGray
-        )
+        if (checkGoal){
+            Text(
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Yellow,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    ) {
+                        append(coloredText)
+                    }
+                    append(fullText.substring(coloredText.length))
+                },
+                fontSize = 12.sp,
+                color =  WalkMateThemes.colorScheme.textColor
+            )
+        }else{
+            Text(text = endingMessage,
+                fontSize = 12.sp,
+                color = WalkMateThemes.colorScheme.textColor
+            )
+        }
+
+
 
     }
 }

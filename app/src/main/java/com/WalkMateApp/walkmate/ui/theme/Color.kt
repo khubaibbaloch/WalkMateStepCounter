@@ -24,3 +24,15 @@ val Orange = Color(0xFFF8531F)
 val ProgressColor1 = Color(0XFFe07a51)
 val ProgressColor2 = Color(0XFFdc7a78)
 val ProgressColor3 = Color(0XFFdf7681)
+
+// Light theme color
+
+// background color
+val  LightGray = Color.Gray.copy(0.2f)
+// onBackground color
+val White = Color(0xFFFFFFFF)
+
+
+val lightCyan = Color(0xFF00BCD4) // Cyan for light theme
+val green = Color(0xFF4CAF50)
+val teal = Color(0xFF00897B)

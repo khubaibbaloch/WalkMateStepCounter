@@ -16,13 +16,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @Composable
 fun ToggleButtonRow(isUnitSelected: Boolean, onToggle: (Boolean) -> Unit,unitType1: String,unitType2: String) {
     Row(
         modifier = Modifier
             .padding(16.dp)
-            .border(width = 1.dp, color = Color.White, shape = RoundedCornerShape(60)),
+            .border(width = 1.dp, color = WalkMateThemes.colorScheme.textColor, shape = RoundedCornerShape(60)),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

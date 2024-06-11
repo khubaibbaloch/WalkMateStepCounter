@@ -1,13 +1,13 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.WaterIntakeScreen
 
 
-import android.util.Log
+import android.Manifest
+import android.content.pm.PackageManager
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -16,22 +16,27 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
+import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.ShowPermissionDeniedDialog
+import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.isActivityRecognitionSupported
 import com.WalkMateApp.walkmate.WalkMateApp.ui.WaterIntakeScreen.common.CircularWaterProgressBar
 import com.WalkMateApp.walkmate.WalkMateApp.ui.WaterIntakeScreen.common.WaterIntakeTopBar
-import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 
 @Composable
 fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel) {
@@ -39,14 +44,18 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
     val totalWaterIntake = viewModel.waterGoal.collectAsState()
     val selectedVolume = viewModel.waterML.collectAsState()
 
-
-
+    val context = LocalContext.current
+    var showPermissionDeniedDialog by remember { mutableStateOf(false) }
+    var showSensorNotSupportedDialog by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
             WaterIntakeTopBar(
                 onBackArrowClick = {
                     navController.popBackStack()
+                },
+                onProfileClick = {
+                    navController.navigate(ScreenRoutes.SettingsScreen.route)
                 }
             )
         }
@@ -55,7 +64,7 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize()
-                .background(MidnightBlue)
+                .background(WalkMateThemes.colorScheme.background)
         ) {
             Column(
                 modifier = Modifier
@@ -65,7 +74,7 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 // Calculate progress
-                val progress = waterIntake.value /totalWaterIntake.value.toFloat()
+                val progress = waterIntake.value / totalWaterIntake.value.toFloat()
 
                 CircularWaterProgressBar(
                     progress = progress.toFloat(),
@@ -76,8 +85,29 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
 
                 Column(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
+                        .padding(16.dp)
+                        .clip(RoundedCornerShape(10))
+                        .clickable {
+                            if (!isActivityRecognitionSupported(context)) {
+                                showSensorNotSupportedDialog = true
+                            }else{
+                                if (ContextCompat.checkSelfPermission(
+                                        context,
+                                        Manifest.permission.ACTIVITY_RECOGNITION
+                                    ) == PackageManager.PERMISSION_GRANTED
+                                ) {
+                                    var newWaterIntake =
+                                        waterIntake.value + selectedVolume.value
+                                    if (newWaterIntake > totalWaterIntake.value) {
+                                        newWaterIntake = totalWaterIntake.value
+                                    }
+                                    viewModel.updateWaterIntake(newWaterIntake.toString())
+                                } else {
+                                    // Permission is not granted, show the dialog
+                                    showPermissionDeniedDialog = true
+                                }
+                            }
+                        },
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
@@ -93,14 +123,8 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                         ),
                         contentDescription = "Add Water",
                         modifier = Modifier
+                            .padding(8.dp)
                             .size(80.dp)
-                            .clickable {
-                                var newWaterIntake = waterIntake.value + selectedVolume.value
-                                if (newWaterIntake > totalWaterIntake.value) {
-                                    newWaterIntake = totalWaterIntake.value
-                                }
-                                viewModel.updateWaterIntake(newWaterIntake.toString())
-                            }
                     )
                     Text(
                         text = when (selectedVolume.value) {
@@ -112,6 +136,8 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                         },
                         color = Color.Gray,
                         fontSize = 12.sp,
+                        modifier = Modifier
+                            .padding(8.dp)
                     )
                 }
                 WaterVolumeSelection(selectedVolume = selectedVolume.value) { volume ->
@@ -119,6 +145,11 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                 }
             }
         }
+        ShowPermissionDeniedDialog(
+            showPermission = showPermissionDeniedDialog,
+            onDismiss = { showPermissionDeniedDialog = false },
+            context = context
+        )
     }
 }
 
@@ -177,8 +208,9 @@ fun WaterVolumeItem(
 ) {
     Column(
         modifier = Modifier
-            .padding(8.dp)
-            .clickable(onClick = onItemClick),
+            .clip(RoundedCornerShape(10))
+            .clickable(onClick = onItemClick)
+            .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(

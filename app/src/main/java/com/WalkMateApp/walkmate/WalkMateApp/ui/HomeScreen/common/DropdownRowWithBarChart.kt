@@ -1,6 +1,5 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,13 +9,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.KeyboardArrowDown
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -27,15 +21,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import co.yml.charts.axis.AxisData
-import co.yml.charts.axis.DataCategoryOptions
 import co.yml.charts.common.model.Point
-import co.yml.charts.common.utils.DataUtils
 import co.yml.charts.ui.barchart.BarChart
 import co.yml.charts.ui.barchart.models.BarChartData
 import co.yml.charts.ui.barchart.models.BarChartType
 import co.yml.charts.ui.barchart.models.BarData
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
-import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
+import com.WalkMateApp.walkmate.ui.theme.green
 import java.util.Random
 
 @Composable
@@ -69,8 +62,8 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
 
 
     val xAxisData = AxisData.Builder()
-        .axisLineColor(Color.White)
-        .axisLabelColor(Color.White)
+        .axisLineColor(WalkMateThemes.colorScheme.tint)
+        .axisLabelColor(WalkMateThemes.colorScheme.tint)
         .axisStepSize(10.dp)
         .shouldDrawAxisLineTillEnd(true)
         .steps(barChartData.size - 1)
@@ -80,9 +73,9 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
         .build()
 
     val yAxisData = AxisData.Builder()
-        .backgroundColor(TwilightBlue)
-        .axisLineColor(Color.White)
-        .axisLabelColor(Color.White)
+        .backgroundColor(WalkMateThemes.colorScheme.onBackground)
+        .axisLineColor(WalkMateThemes.colorScheme.tint)
+        .axisLabelColor(WalkMateThemes.colorScheme.tint)
         .steps(yStepSize)
         .labelAndAxisLinePadding(30.dp)
         .axisOffset(20.dp)
@@ -95,7 +88,7 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
             .fillMaxWidth()
             .padding(top = 16.dp)
             .background(
-                TwilightBlue,
+                WalkMateThemes.colorScheme.onBackground,
                 shape = RoundedCornerShape(8.dp)
             )
             .padding(16.dp)
@@ -108,7 +101,7 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
             Text(
                 text = "Steps History",
                 fontSize = 14.sp,
-                color = Color.White
+                color = WalkMateThemes.colorScheme.textColor
             )
 
             Row(
@@ -118,7 +111,7 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
                   //  text = selectedText.value,
                     text = "Weekly",
                     fontSize = 14.sp,
-                    color = Color.Green
+                    color = green
                 )
                 /*IconButton(onClick = { expanded.value = !expanded.value }) {
                     Icon(
@@ -167,7 +160,7 @@ fun DropdownRowWithBarChart(viewModel: WalkMateViewModel) {
             barChartData = BarChartData(
                 paddingEnd= 0.dp,
                 horizontalExtraSpace = 20.dp,
-                backgroundColor = TwilightBlue,
+                backgroundColor = WalkMateThemes.colorScheme.onBackground,
                 chartData = barChartData,
                 xAxisData = xAxisData,
                 yAxisData = yAxisData,

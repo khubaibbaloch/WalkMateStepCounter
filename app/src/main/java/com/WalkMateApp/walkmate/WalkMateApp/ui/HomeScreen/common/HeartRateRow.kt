@@ -12,21 +12,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowRight
-import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.WalkMateApp.walkmate.R
-import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
-import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @Composable
 fun HeartRateAndWaterRow(
@@ -34,15 +30,17 @@ fun HeartRateAndWaterRow(
     imageRes: Int,
     Tittle: String,
     Check: Boolean,
-    onButtonClick: () -> Unit,
+    onRowClick: () -> Unit,
 ) {
 
 
     Row(
         modifier = Modifier
             .padding(top = 16.dp)
-            .background(TwilightBlue, shape = RoundedCornerShape(10.dp))
-            .padding(horizontal = 16.dp, vertical = 12.dp) // Adjusted padding
+            .clip(RoundedCornerShape(10.dp))
+            .background(WalkMateThemes.colorScheme.onBackground)
+            .clickable {  onRowClick() }
+            .padding(horizontal = 16.dp, vertical = 12.dp)
             .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -66,7 +64,7 @@ fun HeartRateAndWaterRow(
             Text(
                 text = Tittle,
                 fontSize = 16.sp, // Set text size to 16
-                color = Color.White // Adjusted text color
+                color = WalkMateThemes.colorScheme.textColor // Adjusted text color
             )
             Text(
                 text = value,
@@ -76,17 +74,11 @@ fun HeartRateAndWaterRow(
         }
 
         Spacer(modifier = Modifier.weight(1f))
-
-        IconButton(
-            onClick = onButtonClick,
+        Icon(
+            Icons.Default.KeyboardArrowRight,
+            contentDescription = "End Icon",
+            tint = WalkMateThemes.colorScheme.tint,
             modifier = Modifier.size(34.dp)
-        ) {
-            Icon(
-                Icons.Default.KeyboardArrowRight,
-                contentDescription = "End Icon",
-                tint = Color.White,
-                modifier = Modifier.size(34.dp)
-            )
-        }
+        )
     }
 }

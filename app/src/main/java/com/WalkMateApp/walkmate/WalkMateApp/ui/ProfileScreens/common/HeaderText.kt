@@ -13,6 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @Composable
 fun HeaderText(title: String, description: String) {
@@ -24,7 +25,7 @@ fun HeaderText(title: String, description: String) {
             text = title,
             modifier = Modifier.padding(bottom = 16.dp),
             style = TextStyle(
-                color = Color.White,
+                color = WalkMateThemes.colorScheme.textColor,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             ),
@@ -33,7 +34,7 @@ fun HeaderText(title: String, description: String) {
         Text(
             text = description,
             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = TextStyle(color = Color.White, fontSize = 16.sp),
+            style = TextStyle(color = WalkMateThemes.colorScheme.textColor, fontSize = 16.sp),
             textAlign = TextAlign.Center
         )
     }

@@ -70,7 +70,7 @@ fun CircularWaterProgressBar(progress: Float, intake: Float, total: Float) {
 
             // Draw the border
             drawArc(
-                color = Color.DarkGray,
+                color = Color.Gray,
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,

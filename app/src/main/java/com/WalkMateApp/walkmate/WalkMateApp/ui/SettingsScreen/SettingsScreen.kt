@@ -16,13 +16,16 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -49,6 +52,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
@@ -77,11 +81,9 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
     val waterIntake = viewModel.waterIntake.collectAsState()
 
     // handling theme selection (light or dark)
-    val isLightThemeSelected = remember { mutableStateOf(false) }
     val isThemeClicked = remember { mutableStateOf(false) }
-
-
-
+    val currentTheme = viewModel.currentTheme.collectAsState()
+    val isLightThemeSelected = remember { mutableStateOf(currentTheme.value == "2") }
 
 
 
@@ -95,7 +97,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MidnightBlue)
+                .background(WalkMateThemes.colorScheme.background)
                 .padding(
                     start = 12.dp, end = 12.dp, bottom = 12.dp, top = 24.dp
                 )
@@ -109,7 +111,6 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 SettingsItemCard(modifier = Modifier.weight(1f),
                     icon = R.drawable.footstepsicon,
                     iconSize = 24.dp,
-                    iconColor = Color.Cyan,
                     mainText = "Step goal",
                     smallText = viewModel.getStepGoal(),
                     onCardClick = {
@@ -117,9 +118,8 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     })
 
                 SettingsItemCard(modifier = Modifier.weight(1f),
-                    icon = R.drawable.water_intake,
+                    icon = R.drawable.dropicon,
                     iconSize = 18.dp,
-                    iconColor = Color.White,
                     mainText = "Water Goal",
                     smallText = "${getWaterGoal.value}ml",
                     onCardClick = {
@@ -136,7 +136,6 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 SettingsItemCard(modifier = Modifier.weight(1f),
                     icon = R.drawable.statisticicon,
                     iconSize = 20.dp,
-                    iconColor = Purple80,
                     mainText = "Statistics",
                     smallText = "Today's",
                     onCardClick = {
@@ -146,7 +145,6 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 SettingsItemCard(modifier = Modifier.weight(1f),
                     icon = R.drawable.night_modeicon,
                     iconSize = 20.dp,
-                    iconColor = Color.White,
                     mainText = "Dark Mode",
                     smallText = "Switch to...",
                     onCardClick = {
@@ -164,22 +162,27 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.infoinstructionicon,
                     iconSize = 20.dp,
-                    iconColor = Color.LightGray,
                     mainText = "Instructions",
-                    smallText = "Read all"
+                    smallText = "Read all",
+                    onCardClick = {
+                        navController.navigate(ScreenRoutes.InstructionScreen.route)
+                    }
                 )
 
                 SettingsItemCard(
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.needhelpicon,
                     iconSize = 22.dp,
-                    iconColor = Color.Cyan,
-                    mainText = "Need help?",
-                    smallText = "Questions"
+                    mainText = "About us",
+                    smallText = "Info",
+                    onCardClick = {
+                        navController.navigate(ScreenRoutes.AboutUsScreen.route)
+                    }
                 )
+
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            /*Spacer(modifier = Modifier.height(12.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -202,134 +205,146 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "Contact Us",
                     smallText = "Call us at +92...'"
                 )
-            }
+            }*/
         }
     }
 
     if (isFootstepClicked.value) {
-        AlertDialog(containerColor = MidnightBlue, onDismissRequest = {
-            isFootstepClicked.value = false
-            FootstepUserInput.value = ""
-        }, confirmButton = {
-            Button(onClick = {
-                if (!isError.value) {
-                    viewModel.updateStepGoal(FootstepUserInput.value)
-                    isFootstepClicked.value = false
-                    FootstepUserInput.value = ""
-                }
-            }) {
-                Text("Save")
-            }
-        }, dismissButton = {
-            Button(onClick = {
+        AlertDialog(
+            containerColor = WalkMateThemes.colorScheme.onBackground.copy(1f),
+            onDismissRequest = {
                 isFootstepClicked.value = false
                 FootstepUserInput.value = ""
-            }) {
-                Text("Cancel")
-            }
-        }, title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.target),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(35.dp)
-                        .padding(end = 8.dp)
-                )
-                Text(
-                    text = "Step Goal", style = TextStyle(
-                        fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-        }, text = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Text(
-                    text = buildAnnotatedString {
-                        append("Recommended: ")
-                        withStyle(
-                            style = SpanStyle(
-                                fontWeight = FontWeight.Bold, color = Color.Red
-                            )
-                        ) {
-                            append("6000")
-                        }
-                        append(" steps/day based on your parameters")
-                    },
-                    fontSize = 14.sp,
-                    color = Color.White,
-                )
-                Spacer(modifier = Modifier.height(16.dp))
 
-                OutlinedTextField(
-                    value = FootstepUserInput.value,
-                    onValueChange = { newValue ->
-                        FootstepUserInput.value = newValue
-                        val intValue = newValue.toIntOrNull()
-                        isError.value = intValue == null || intValue < 500 || intValue > 15000
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (!isError.value) {
+                            viewModel.updateStepGoal(FootstepUserInput.value)
+                            isFootstepClicked.value = false
+                            FootstepUserInput.value = ""
+                        }
                     },
-                    label = {
-                        Text(
-                            "Enter your step goal",
-                            color = if (isError.value) Color.Red else Color.White
-                        )
-                    },
-                    textStyle = TextStyle(color = Color.White),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = if (isError.value) Color.Red else Color.White,
-                        unfocusedBorderColor = if (isError.value) Color.Red else Color.Gray
-                    ),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                    isError = isError.value
-                )
-                Column(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.Start
+                    colors = ButtonDefaults.buttonColors(Color.LightGray),
                 ) {
+                    Text(text = "Save", color = Color.Black)
+                }
+            },
+            dismissButton = {
+                Button(onClick = {
+                    isFootstepClicked.value = false
+                    FootstepUserInput.value = ""
+                }, colors = ButtonDefaults.buttonColors(Color.LightGray)) {
+                    Text(text = "Cancel", color = Color.Black)
+                }
+            },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.target),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .size(35.dp)
+                            .padding(end = 8.dp)
+                    )
                     Text(
-                        text = errorMessage,
-                        color = if (isError.value) Color.Red else Color.Gray,
-                        style = TextStyle(fontSize = 12.sp)
+                        text = "Step Goal", style = TextStyle(
+                            fontSize = 16.sp,
+                            color = WalkMateThemes.colorScheme.textColor,
+                            fontWeight = FontWeight.Bold
+                        )
                     )
                 }
-            }
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = buildAnnotatedString {
+                            append("Recommended: ")
+                            withStyle(
+                                style = SpanStyle(
+                                    fontWeight = FontWeight.Bold, color = Color.Red
+                                )
+                            ) {
+                                append("6000")
+                            }
+                            append(" steps/day based on your parameters")
+                        },
+                        fontSize = 14.sp,
+                        color = WalkMateThemes.colorScheme.textColor,
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
 
-        }
+                    OutlinedTextField(
+                        value = FootstepUserInput.value,
+                        onValueChange = { newValue ->
+                            FootstepUserInput.value = newValue
+                            val intValue = newValue.toIntOrNull()
+                            isError.value = intValue == null || intValue < 500 || intValue > 15000
+                        },
+                        label = {
+                            Text(
+                                "Enter your step goal",
+                                color = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor
+                            )
+                        },
+                        textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            focusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor,
+                            unfocusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor
+                        ),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        isError = isError.value
+                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            text = errorMessage,
+                            color = if (isError.value) Color.Red else Color.Gray,
+                            style = TextStyle(fontSize = 12.sp)
+                        )
+                    }
+                }
+
+            }
 
 
         )
     }
 
     if (isWaterIntakeClicked.value) {
-        AlertDialog(containerColor = MidnightBlue, onDismissRequest = {
+        AlertDialog(containerColor = WalkMateThemes.colorScheme.onBackground, onDismissRequest = {
             isWaterIntakeClicked.value = false
             WaterIntakeUserInput.value = ""
         }, confirmButton = {
             Button(onClick = {
                 if (!isError.value) {
                     viewModel.updateWaterGoal(WaterIntakeUserInput.value)
-                    if(waterIntake.value >= WaterIntakeUserInput.value.toInt()){
+                    if (waterIntake.value >= WaterIntakeUserInput.value.toInt()) {
                         viewModel.updateWaterIntake(WaterIntakeUserInput.value)
                     }
                     isWaterIntakeClicked.value = false
                     WaterIntakeUserInput.value = ""
                 }
 
-            }) {
-                Text("Save")
+            }, colors = ButtonDefaults.buttonColors(Color.LightGray)) {
+                Text(text = "Save", color = Color.Black)
             }
         }, dismissButton = {
             Button(onClick = {
                 isWaterIntakeClicked.value = false
                 WaterIntakeUserInput.value = ""
-            }) {
-                Text("Cancel")
+            }, colors = ButtonDefaults.buttonColors(Color.LightGray)) {
+                Text(text = "Cancel", color = Color.Black)
             }
         }, title = {
             Row(
@@ -345,7 +360,9 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 Text(
                     text = "Water Goal", // Change to Water Intake
                     style = TextStyle(
-                        fontSize = 16.sp, color = Color.White, fontWeight = FontWeight.Bold
+                        fontSize = 16.sp,
+                        color = WalkMateThemes.colorScheme.textColor,
+                        fontWeight = FontWeight.Bold
                     )
                 )
             }
@@ -367,7 +384,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         append(" ml/day based on your parameters") // Change to ml/day
                     },
                     fontSize = 14.sp,
-                    color = Color.White,
+                    color = WalkMateThemes.colorScheme.textColor,
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
@@ -381,12 +398,12 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     label = {
                         Text(
                             "Enter your Water Goal in ml",
-                            color = if (isError.value) Color.Red else Color.White
+                            color = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor
                         )
                     },
-                    textStyle = TextStyle(color = Color.White),
+                    textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
                     colors = TextFieldDefaults.outlinedTextFieldColors(
-                        focusedBorderColor = if (isError.value) Color.Red else Color.White,
+                        focusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor,
                         unfocusedBorderColor = if (isError.value) Color.Red else Color.Gray
                     ),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.NumberPassword),
@@ -407,63 +424,96 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
         })
     }
 
+
+
     if (isThemeClicked.value) {
-        AlertDialog(containerColor = MidnightBlue, onDismissRequest = {
-            isThemeClicked.value = false
-        }, confirmButton = {
-            Button(onClick = {
+        AlertDialog(
+            containerColor = WalkMateThemes.colorScheme.onBackground,
+            onDismissRequest = {
                 isThemeClicked.value = false
-            }) {
-                Text("Save")
-            }
-        }, dismissButton = {
-            Button(onClick = {
-                isThemeClicked.value = false
-            }) {
-                Text("Cancel")
-            }
-        }, title = {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Set the theme", style = TextStyle(
-                        fontSize = 16.sp,
-                        color = Color.White,
-                    )
-                )
-            }
-        }, text = {
-            Column(
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Row(
-                    modifier = Modifier.padding(bottom = 0.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                // Update theme when dialog is dismissed
+                if (currentTheme.value == "2")  isLightThemeSelected.value = true else   isLightThemeSelected.value = false
+
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        isThemeClicked.value = false
+                        if (isLightThemeSelected.value) {
+                            viewModel.updateTheme("2")
+                        } else {
+                            viewModel.updateTheme("1")
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.LightGray)
                 ) {
-                    RadioButton(selected = isLightThemeSelected.value,
-                        onClick = { isLightThemeSelected.value = true })
+                    Text(text = "Save", color = Color.Black)
+                }
+            },
+            dismissButton = {
+                Button(
+                    onClick = {
+                        isThemeClicked.value = false
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.LightGray)
+                ) {
+                    Text(text = "Cancel", color = Color.Black)
+                }
+            },
+            title = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
                     Text(
-                        text = "Light Theme", style = TextStyle(
-                            fontSize = 14.sp, color = Color.White
+                        text = "Set the theme", style = TextStyle(
+                            fontSize = 16.sp,
+                            color = WalkMateThemes.colorScheme.textColor,
                         )
                     )
                 }
-                Row(
-                    modifier = Modifier.padding(bottom = 0.dp),
-                    verticalAlignment = Alignment.CenterVertically
+            },
+            text = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    RadioButton(selected = !isLightThemeSelected.value,
-                        onClick = { isLightThemeSelected.value = false })
-                    Text(
-                        text = "Dark Theme", style = TextStyle(
-                            fontSize = 14.sp, color = Color.White
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10f))
+                            .clickable { isLightThemeSelected.value = true },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = isLightThemeSelected.value,
+                            onClick = { isLightThemeSelected.value = true },
+                            colors = RadioButtonDefaults.colors(Color.LightGray)
                         )
-                    )
+                        Text(
+                            text = "Light Theme", style = TextStyle(
+                                fontSize = 14.sp, color = WalkMateThemes.colorScheme.textColor
+                            ), modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
+                    Row(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(10f))
+                            .clickable { isLightThemeSelected.value = false },
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        RadioButton(
+                            selected = !isLightThemeSelected.value,
+                            onClick = { isLightThemeSelected.value = false },
+                            colors = RadioButtonDefaults.colors(Color.LightGray)
+                        )
+                        Text(
+                            text = "Dark Theme", style = TextStyle(
+                                fontSize = 14.sp, color = WalkMateThemes.colorScheme.textColor
+                            ), modifier = Modifier.padding(end = 16.dp)
+                        )
+                    }
                 }
             }
-        })
+        )
     }
 
 }

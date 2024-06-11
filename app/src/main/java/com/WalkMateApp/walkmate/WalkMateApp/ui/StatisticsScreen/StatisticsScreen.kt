@@ -38,6 +38,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
@@ -69,7 +70,7 @@ fun StatisticsScreen(navController: NavController,viewModel: WalkMateViewModel) 
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MidnightBlue)
+                .background(WalkMateThemes.colorScheme.background)
                 .padding(
                     start = 12.dp, end = 12.dp,
                     bottom = 12.dp,
@@ -86,16 +87,14 @@ fun StatisticsScreen(navController: NavController,viewModel: WalkMateViewModel) 
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.footstepsicon,
                     iconSize = 24.dp,
-                    iconColor = Color.Cyan,
                     mainText = "Today Steps",
                     smallText = "$stepCount"
                 )
 
                 StatisticsItemCard(
                     modifier = Modifier.weight(1f),
-                    icon = R.drawable.water_intake,
+                    icon = R.drawable.dropicon,
                     iconSize = 18.dp,
-                    iconColor = Color.White,
                     mainText = "Water Intake",
                     smallText = "${waterIntake.value} ml",
                 )
@@ -111,7 +110,6 @@ fun StatisticsScreen(navController: NavController,viewModel: WalkMateViewModel) 
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.calories,
                     iconSize = 20.dp,
-                    iconColor = Color.Red,
                     mainText = "Calories",
                     smallText = "$caloriesBurned"
                 )
@@ -120,7 +118,6 @@ fun StatisticsScreen(navController: NavController,viewModel: WalkMateViewModel) 
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.heartbeaticon,
                     iconSize = 20.dp,
-                    iconColor = Color.Red,
                     mainText = "Heart Rate",
                     smallText = "${heartRate.value} bmp"
                 )

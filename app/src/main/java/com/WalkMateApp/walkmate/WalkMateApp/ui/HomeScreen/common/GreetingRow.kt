@@ -14,12 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @Composable
 fun GreetingRow(setGoal:String,userName:String,todayDate:String){
@@ -34,28 +33,28 @@ fun GreetingRow(setGoal:String,userName:String,todayDate:String){
             Text(
                 text = userName, style = TextStyle(
                     fontSize = 16.sp,
-                    color = Color.White, fontWeight = FontWeight.SemiBold
+                    color = WalkMateThemes.colorScheme.textColor, fontWeight = FontWeight.SemiBold
                 )
             )
             Spacer(modifier = Modifier.height(6.dp))
             Text(
                 text = todayDate,
                 style = TextStyle(fontSize = 14.sp,
-                    color = Color.White),
+                    color = WalkMateThemes.colorScheme.textColor),
             )
         }
 
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(10))
-                .background(TwilightBlue)
+                .background(WalkMateThemes.colorScheme.onBackground)
                 .padding(14.dp),
             contentAlignment = Alignment.Center
         ) {
             Text(
                 text = setGoal,
                 style = TextStyle(fontSize = 14.sp,
-                    color = Color.White)
+                    color = WalkMateThemes.colorScheme.textColor)
             )
         }
     }

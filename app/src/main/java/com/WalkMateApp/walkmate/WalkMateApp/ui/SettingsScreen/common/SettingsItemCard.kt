@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
@@ -30,7 +31,6 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 @Composable
 fun SettingsItemCard(
     icon: Int = R.drawable.footstepsicon,
-    iconColor: Color = Color.Cyan,
     iconSize: Dp = 20.dp,
     mainText:String = "",
     smallText:String = "",
@@ -41,23 +41,24 @@ fun SettingsItemCard(
         modifier = modifier
             .height(120.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(TwilightBlue)
-            .padding(16.dp)
+            .background(WalkMateThemes.colorScheme.onBackground)
             .clickable { onCardClick() }
+            .padding(16.dp)
+
 
     ) {
         Box(
             modifier = Modifier
                 .size(34.dp)
                 .clip(CircleShape)
-                .background(MidnightBlue),
+                .background(WalkMateThemes.colorScheme.background),
             contentAlignment = Alignment.Center
         )
         {
             Icon(
                 painter = painterResource(id = icon),
                 contentDescription = "",
-                tint = iconColor,
+                tint = WalkMateThemes.colorScheme.tint,
                 modifier = Modifier.size(iconSize),
             )
         }
@@ -68,7 +69,7 @@ fun SettingsItemCard(
         Text(text = mainText,
             fontSize = 13.sp,
             fontWeight = FontWeight.Medium,
-            color = Color.LightGray)
+            color = WalkMateThemes.colorScheme.textColor)
 
         Text(text = smallText,
             fontSize = 12.sp,

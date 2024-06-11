@@ -13,6 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -24,19 +25,19 @@ fun MeasurementInputField(value: String, onValueChange: (String) -> Unit, label:
                 onValueChange(newValue)
             }
         },
-        label = { Text(text = label, color = if (isError) Color.Red else Color.White) },
+        label = { Text(text = label, color = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor) },
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp),
-        textStyle = TextStyle(color = Color.White),
+        textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
         isError = isError,
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
         colors = TextFieldDefaults.outlinedTextFieldColors(
-            focusedBorderColor = if (isError) Color.Red else Color.White,
-            unfocusedBorderColor = if (isError) Color.Red else Color.White,
-            cursorColor = if (isError) Color.Red else Color.White
+            focusedBorderColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor,
+            unfocusedBorderColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor,
+            cursorColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor
         )
     )
 }

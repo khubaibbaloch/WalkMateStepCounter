@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 
 @Composable
 fun PrivacyNoticeAndConfirmButton(onNavigateClick: () -> Unit) {
@@ -26,7 +27,7 @@ fun PrivacyNoticeAndConfirmButton(onNavigateClick: () -> Unit) {
         Text(
             text = "Your privacy is paramount to us. We never share your personal information with any third parties",
             modifier = Modifier.padding(start = 16.dp, end = 16.dp),
-            style = TextStyle(color = Color.White, fontSize = 12.sp),
+            style = TextStyle(color = WalkMateThemes.colorScheme.textColor, fontSize = 12.sp),
             textAlign = TextAlign.Center
         )
 
