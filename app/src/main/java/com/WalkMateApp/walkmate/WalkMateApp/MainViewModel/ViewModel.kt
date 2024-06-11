@@ -67,7 +67,6 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
                     saveStepCount(_stepCount.value)
                     estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
                 }
-
             }
         }
 
@@ -206,8 +205,16 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     }*/
     fun saveStepCount(steps: Int) {
         val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
-        sharedPreferencesHelper.saveData(currentDayOfWeek!!, steps.toString())
+        val saveLastDay =  sharedPreferencesHelper.getData("lastDaySaved", "0")
+        if (currentDayOfWeek != saveLastDay){
+            _stepCount.value = 0
+            sharedPreferencesHelper.saveData("lastDaySaved", currentDayOfWeek!!)
+        }else{
+            sharedPreferencesHelper.saveData(currentDayOfWeek, steps.toString())
+
+        }
     }
+
     fun resetDataOnDayChange() {
         val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         val lastRecordedDay = sharedPreferencesHelper.getData("lastRecordedDay", "0")
@@ -223,9 +230,13 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
             updateWaterIntake("0")
             resetWaterIntakeIfDayChanged()
 
+            estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
 
             sharedPreferencesHelper.saveData("lastRecordedDay", currentDayOfWeek!!)
         }
+        Log.d("TAG", "resetDataOnDayChange: $lastRecordedDay")
+
+
     }
 
     fun resetStepCountsOnWeekend() {

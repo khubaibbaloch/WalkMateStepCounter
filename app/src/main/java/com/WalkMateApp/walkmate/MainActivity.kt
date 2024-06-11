@@ -70,4 +70,9 @@ class MainActivity : ComponentActivity() {
     companion object {
         private const val REQUEST_CODE_ACTIVITY_RECOGNITION = 1
     }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.resetDataOnDayChange()
+    }
 }

@@ -489,9 +489,8 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
         if (isWalking.value) {
             viewModel.startStepCounter()
             viewModel.startTimer()
-            //  viewModel.resetDataOnDayChange()
+
         } else {
-            //      viewModel.resetDataOnDayChange()
             viewModel.stopTimer()
             viewModel.stopSensor()
         }
