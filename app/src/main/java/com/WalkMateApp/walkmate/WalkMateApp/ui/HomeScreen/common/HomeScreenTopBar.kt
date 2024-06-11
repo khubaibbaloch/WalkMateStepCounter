@@ -10,6 +10,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -18,41 +19,41 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
-import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
-import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreenTopBar(
-    onMenuClick:()->Unit,
-    onProfileClick:()->Unit
-){
+    onMenuClick: () -> Unit,
+    onProfileClick: () -> Unit,
+    onProfileImg: String,
+) {
     TopAppBar(
         title = { },
         colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent),
         navigationIcon = {
             IconButton(
-                onClick = {
-                   onMenuClick()
-                },
                 modifier = Modifier
                     .padding(start = 8.dp)
                     .size(35.dp)
                     .clip(RoundedCornerShape(10))
-                    .background(TwilightBlue)
+                    .background(WalkMateThemes.colorScheme.onBackground),
+                onClick = {
+                    onMenuClick()
+                },
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.menu_box),
                     contentDescription = "Settings Icon",
-                    tint = Color.White,
+                    tint = WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(25.dp)
                 )
             }
         },
         actions = {
 
-            Image(painter = painterResource(id = R.drawable.ic_launcher_background),
+            Image(painter = painterResource(id = if (onProfileImg == "Male") R.drawable.man else R.drawable.female),
                 contentDescription = "Profile Picture",
                 modifier = Modifier
                     .padding(end = 8.dp)
@@ -60,7 +61,7 @@ fun HomeScreenTopBar(
                     .clip(CircleShape)
                     .background(Color.Gray)
                     .clickable {
-                       onProfileClick()
+                        onProfileClick()
                     }
             )
         },

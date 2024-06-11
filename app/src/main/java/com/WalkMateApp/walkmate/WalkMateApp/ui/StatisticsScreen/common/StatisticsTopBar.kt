@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
@@ -31,8 +33,7 @@ fun SatisticsTopBar(
 ) {
     TopAppBar(
         modifier = Modifier
-            .shadow(3.dp)
-            .background(MidnightBlue),
+            .shadow(1.dp),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
@@ -44,20 +45,20 @@ fun SatisticsTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "",
-                    tint = Color.White,
+                    tint = WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(34.dp)
                 )
             }
         },
         title = {
             Row(
-                modifier = Modifier.fillMaxWidth(1f),
+                modifier = Modifier.fillMaxWidth(1f).padding(end = 34.dp),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = "Statistics",
-                    color = Color.White
+                    color = WalkMateThemes.colorScheme.textColor
                 )
             }
         },

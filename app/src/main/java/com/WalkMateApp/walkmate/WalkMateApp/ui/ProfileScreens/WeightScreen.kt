@@ -1,5 +1,6 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -21,11 +22,13 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -33,17 +36,20 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileTopBar
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.HeaderText
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.MeasurementInputField
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.PrivacyNoticeAndConfirmButton
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.ToggleButtonRow
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 
 @Composable
-fun WeightScreen(navController: NavController) {
-    var isKgSelected = remember { mutableStateOf(true) }
-    var weightTextField = remember { mutableStateOf("") }
+fun WeightScreen(navController: NavController,viewModel: WalkMateViewModel) {
+    val weightState = viewModel.weight.collectAsState()
+    val (weightText, isKgSelected) = weightState.value
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -68,48 +74,28 @@ fun WeightScreen(navController: NavController) {
                 description = "Accurate data helps us provide better recommendations"
             )
             ToggleButtonRow(
-                isUnitSelected = isKgSelected.value,
-                onToggle = { isSelected ->
-                    isKgSelected.value = isSelected
+                isUnitSelected = isKgSelected,
+                onToggle = { newIsKgSelected ->
+                    viewModel.updateWeight(newWeight = weightText, isKgSelected = newIsKgSelected)
                 },
                 unitType1 = "KG",
                 unitType2 = "LB"
             )
 
-            MeasurementInputField(value = weightTextField.value,
+            MeasurementInputField(value = weightText,
                 onValueChange = { newValue ->
-                    weightTextField.value = newValue
-                }, label = "Enter Weight")
+                    viewModel.updateWeight(newWeight = newValue, isKgSelected = isKgSelected)
+                }, label = "Enter Weight",isError = false)
 
             Spacer(modifier = Modifier.weight(1f))
-            PrivacyNoticeAndContinue(onNavigateClick = { navController.navigate(ScreenRoutes.SetGoalScreen.route) })
+            PrivacyNoticeAndConfirmButton(onNavigateClick = {
+                if (weightText.isNotEmpty()) {
+                    navController.navigate(ScreenRoutes.SetGoalScreen.route)
+                } else {
+                    Toast.makeText(context, "Please add height", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 }
 
-
-@Composable
-fun PrivacyNoticeAndContinue(onNavigateClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Your privacy is paramount to us. We never share your personal information with any third parties",
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = TextStyle(color = Color.White, fontSize = 12.sp),
-            textAlign = TextAlign.Center
-        )
-
-        Button(
-            onClick = { onNavigateClick() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(Color.Gray),
-            shape = RoundedCornerShape(10)
-        ) {
-            Text(text = "Continue", color = Color.White)
-        }
-    }
-}

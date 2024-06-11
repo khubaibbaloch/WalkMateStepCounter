@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.R
 
@@ -37,10 +38,8 @@ fun ProfileTopBar(
 ) {
     TopAppBar(
         modifier = Modifier
-            .shadow(3.dp)
-            .background(MidnightBlue),
-        colors = TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent),
+            .shadow(1.dp),
+        colors = TopAppBarDefaults.topAppBarColors(Color.Transparent),
         navigationIcon = {
             IconButton(onClick = {
                 onBackArrowClick()
@@ -49,19 +48,13 @@ fun ProfileTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "",
-                    tint = Color.White,
+                    tint = WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(34.dp)
                 )
             }
         },
         title = {
-            Row(
-                modifier = Modifier.fillMaxWidth(1f),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-                Text(text = "Profile")
-            }
+
         },
     )
 }

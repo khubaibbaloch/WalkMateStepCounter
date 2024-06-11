@@ -2,9 +2,11 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
@@ -23,6 +25,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
@@ -31,12 +34,12 @@ import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 @Composable
 fun SettingsTopBar(
     onBackArrowClick: () -> Unit,
-    onProfileClick: () -> Unit
+    onProfileClick: () -> Unit,
+    onProfileImg: String,
 ) {
     TopAppBar(
         modifier = Modifier
-            .shadow(3.dp)
-            .background(MidnightBlue),
+            .shadow(1.dp),
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent
         ),
@@ -48,7 +51,7 @@ fun SettingsTopBar(
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
                     contentDescription = "",
-                    tint = Color.White,
+                    tint = WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(34.dp)
                 )
             }
@@ -61,27 +64,22 @@ fun SettingsTopBar(
             ) {
                 Text(
                     text = "Settings",
-                    color = Color.White
+                    color = WalkMateThemes.colorScheme.textColor
                 )
             }
         },
         actions = {
-            IconButton(
-                modifier = Modifier.size(48.dp),
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = TwilightBlue
-                ),
-                onClick = {
-                    onProfileClick()
-                })
-            {
-                Icon(
-                    imageVector = Icons.Default.AccountCircle,
-                    contentDescription = "",
-                    tint = Color.White,
-                    modifier = Modifier.size(38.dp)
-                )
-            }
+
+            Image(
+                painter = painterResource(id = if (onProfileImg == "Male") R.drawable.man else R.drawable.female),
+                contentDescription = "",
+                modifier = Modifier
+                    .padding(end = 8.dp)
+                    .size(48.dp)
+                    .clickable { onProfileClick() }
+
+            )
+
         }
     )
 }

@@ -29,19 +29,27 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.TwilightBlue
 
 
 @Composable
-fun ProfileDetailCard() {
+fun ProfileDetailCard(
+    onProfileImg: String,
+    userName: String,
+    age: String,
+    checkGoal:Boolean,
+    endingMessage:String,
+    onProfileUpdate:() -> Unit)
+{
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .height(120.dp)
             .clip(RoundedCornerShape(8.dp))
-            .background(TwilightBlue)
+            .background(WalkMateThemes.colorScheme.onBackground)
             .padding(16.dp)
     ) {
         Row(
@@ -50,7 +58,7 @@ fun ProfileDetailCard() {
                 .height(50.dp)
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_launcher_background),
+                painter = painterResource(id = if (onProfileImg == "Male") R.drawable.man else R.drawable.female),
                 contentDescription = "",
                 modifier = Modifier.clip(CircleShape)
             )
@@ -59,15 +67,15 @@ fun ProfileDetailCard() {
 
             Column {
                 Text(
-                    text = "Parvez Mayar",
-                    color = Color.White.copy(.9f),
+                    text = userName,
+                    color = WalkMateThemes.colorScheme.textColor,
                     fontSize = 16.sp
                 )
 
 
                 Text(
-                    text = "Level 1",
-                    color = Color.Gray,
+                    text = age,
+                    color = WalkMateThemes.colorScheme.textColor,
                     fontSize = 14.sp,
                     fontWeight = FontWeight.SemiBold
                 )
@@ -77,40 +85,49 @@ fun ProfileDetailCard() {
 
             IconButton(
                 colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = MidnightBlue
+                    containerColor =  WalkMateThemes.colorScheme.background
                 ),
-                onClick = { /*TODO*/ })
+                onClick = { onProfileUpdate()})
             {
                 Icon(
                     painter = painterResource(id = R.drawable.editicon),
                     contentDescription = "",
-                    tint = Color.White,
+                    tint =  WalkMateThemes.colorScheme.tint,
                     modifier = Modifier.size(24.dp)
                 )
             }
         }
-        
+
         Spacer(modifier = Modifier.height(12.dp))
 
         val fullText = "Congo! You have completed your today's goal"
         val coloredText = "Congo!"
 
-        Text(
-            buildAnnotatedString {
-                withStyle(
-                    style = SpanStyle(
-                        color = Color.Yellow,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp
-                    )
-                ) {
-                    append(coloredText)
-                }
-                append(fullText.substring(coloredText.length))
-            },
-            fontSize = 12.sp,
-            color = Color.LightGray
-        )
+        if (checkGoal){
+            Text(
+                buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            color = Color.Yellow,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp
+                        )
+                    ) {
+                        append(coloredText)
+                    }
+                    append(fullText.substring(coloredText.length))
+                },
+                fontSize = 12.sp,
+                color =  WalkMateThemes.colorScheme.textColor
+            )
+        }else{
+            Text(text = endingMessage,
+                fontSize = 12.sp,
+                color = WalkMateThemes.colorScheme.textColor
+            )
+        }
+
+
 
     }
 }

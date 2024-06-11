@@ -1,5 +1,6 @@
 package com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -26,12 +27,14 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -41,18 +44,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreen.common.ProfileTopBar
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.HeaderText
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.MeasurementInputField
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.PrivacyNoticeAndConfirmButton
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.common.ToggleButtonRow
 import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HeightScreen(navController: NavController) {
-    var isCmSelected = remember { mutableStateOf(true) }
-    var heightTextField = remember { mutableStateOf("") }
+fun HeightScreen(navController: NavController, viewModel: WalkMateViewModel) {
+    val heightState = viewModel.height.collectAsState()
+    val (heightText, isCmSelected) = heightState.value
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -77,49 +83,28 @@ fun HeightScreen(navController: NavController) {
                 description = "Distance & speed calculation needs it"
             )
             ToggleButtonRow(
-                isUnitSelected = isCmSelected.value,
-                onToggle = { isSelected ->
-                    isCmSelected.value = isSelected
+                isUnitSelected = isCmSelected,
+                onToggle = { newIsCmSelected ->
+                    viewModel.updateHeight(heightText, newIsCmSelected)
                 },
                 unitType1 = "CM",
                 unitType2 = "IN"
             )
-            MeasurementInputField(value = heightTextField.value,
+            MeasurementInputField(
+                value = heightText,
                 onValueChange = { newValue ->
-                heightTextField.value = newValue
-            }, label = "Enter Height")
+                    viewModel.updateHeight(newHeight = newValue, isCmSelected = isCmSelected)
+                }, label = "Enter Height",isError = false
+            )
 
-           /* HeightInputField(heightTextField.value) { newValue ->
-                heightTextField.value = newValue
-            }*/
             Spacer(modifier = Modifier.weight(1f))
-            PrivacyNoticeAndContinueButton(onNavigateClick = { navController.navigate(ScreenRoutes.WeightScreen.route) })
-        }
-    }
-}
-
-@Composable
-fun PrivacyNoticeAndContinueButton(onNavigateClick: () -> Unit) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Your privacy is paramount to us. We never share your personal information with any third parties",
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-            style = TextStyle(color = Color.White, fontSize = 12.sp),
-            textAlign = TextAlign.Center
-        )
-
-        Button(
-            onClick = { onNavigateClick() },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            colors = ButtonDefaults.buttonColors(Color.Gray),
-            shape = RoundedCornerShape(10),
-        ) {
-            Text(text = "Continue", color = Color.White)
+            PrivacyNoticeAndConfirmButton(onNavigateClick = {
+                if (heightText.isNotEmpty()) {
+                    navController.navigate(ScreenRoutes.WeightScreen.route)
+                } else {
+                    Toast.makeText(context, "Please add height", Toast.LENGTH_SHORT).show()
+                }
+            })
         }
     }
 }

@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -73,4 +74,12 @@ dependencies {
     implementation(libs.androidx.navigation)
     //noinspection UseTomlInstead
     implementation ("co.yml:ycharts:2.1.0")
+
+
+    implementation ("com.airbnb.android:lottie-compose:6.3.0")
+    implementation("androidx.compose.material3:material3-window-size-class:1.2.1")
+
+    // R8 error
+    implementation ("com.google.code.findbugs:jsr305:3.0.2")
 }
+

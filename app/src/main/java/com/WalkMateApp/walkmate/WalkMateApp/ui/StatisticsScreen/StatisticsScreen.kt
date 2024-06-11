@@ -19,11 +19,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -35,7 +38,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
+import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common.SettingsItemCard
 import com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.common.SettingsTopBar
@@ -45,7 +50,13 @@ import com.WalkMateApp.walkmate.ui.theme.MidnightBlue
 import com.WalkMateApp.walkmate.ui.theme.Purple80
 
 @Composable
-fun StatisticsScreen(navController: NavController) {
+fun StatisticsScreen(navController: NavController,viewModel: WalkMateViewModel) {
+
+    val caloriesBurned by viewModel.caloriesBurned.collectAsState()
+    val stepCount by viewModel.stepCount.collectAsState()
+    val heartRate = viewModel.heartRate.collectAsState()
+    val waterIntake = viewModel.waterIntake.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -59,7 +70,7 @@ fun StatisticsScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(MidnightBlue)
+                .background(WalkMateThemes.colorScheme.background)
                 .padding(
                     start = 12.dp, end = 12.dp,
                     bottom = 12.dp,
@@ -76,18 +87,16 @@ fun StatisticsScreen(navController: NavController) {
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.footstepsicon,
                     iconSize = 24.dp,
-                    iconColor = Color.Cyan,
                     mainText = "Today Steps",
-                    smallText = "7K"
+                    smallText = "$stepCount"
                 )
 
                 StatisticsItemCard(
                     modifier = Modifier.weight(1f),
-                    icon = R.drawable.water_intake,
+                    icon = R.drawable.dropicon,
                     iconSize = 18.dp,
-                    iconColor = Color.White,
                     mainText = "Water Intake",
-                    smallText = "500ml",
+                    smallText = "${waterIntake.value} ml",
                 )
             }
 
@@ -101,18 +110,16 @@ fun StatisticsScreen(navController: NavController) {
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.calories,
                     iconSize = 20.dp,
-                    iconColor = Color.Red,
                     mainText = "Calories",
-                    smallText = "120"
+                    smallText = "$caloriesBurned"
                 )
 
                 StatisticsItemCard(
                     modifier = Modifier.weight(1f),
                     icon = R.drawable.heartbeaticon,
                     iconSize = 20.dp,
-                    iconColor = Color.Red,
                     mainText = "Heart Rate",
-                    smallText = "75 bmp"
+                    smallText = "${heartRate.value} bmp"
                 )
             }
         }
