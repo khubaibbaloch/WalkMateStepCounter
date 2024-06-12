@@ -506,7 +506,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             context = context
         )
         showSensorNotSupported(showSensorNotSupportedDialog, context)
-        DayChangeObserver(context = context,viewModel=viewModel)
+        DayChangeObserver(context = context, viewModel = viewModel)
 
     }
 }
@@ -585,20 +585,23 @@ fun StepGoalReachedAnimation(composition: LottieComposition, timeoutMillis: Long
 
 @Composable
 fun DayChangeObserver(context: Context, viewModel: WalkMateViewModel) {
-    val currentDayOfWeek = remember {
-        mutableStateOf(
-            Calendar.getInstance().getDisplayName(
-                Calendar.DAY_OF_WEEK,
-                Calendar.LONG,
-                Locale.getDefault()
-            )
-        )
+    val currentTime = remember { mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE)) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val now = Calendar.getInstance()
+            val newMinute = now.get(Calendar.MINUTE)
+
+            if (currentTime.value != newMinute) {
+                currentTime.value = newMinute
+                viewModel.resetDataOnDayChange()
+                Toast.makeText(context, "Current Minute: ${currentTime.value}", Toast.LENGTH_SHORT).show()
+            }
+
+            // Calculate the delay until the start of the next minute
+            val delayMillis = (60 - now.get(Calendar.SECOND)) * 1000L
+            delay(delayMillis)
+        }
     }
 
-    LaunchedEffect(currentDayOfWeek.value) {
-        viewModel.resetDataOnDayChange()
-        Toast.makeText(context,"wow your logic is working",Toast.LENGTH_SHORT).show()
-        Log.d("TAG", "DayChangeObserver: ${currentDayOfWeek.value}")
-    }
 }
-
