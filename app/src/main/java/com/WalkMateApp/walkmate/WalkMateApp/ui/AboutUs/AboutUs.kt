@@ -110,7 +110,7 @@ fun AboutUsScreen(
                     .background( WalkMateThemes.colorScheme.textColor)
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.ic_launcher_background),
+                    painter = painterResource(id = R.drawable.logo),
                     contentDescription = null,
                     modifier = Modifier
                         .size(100.dp)

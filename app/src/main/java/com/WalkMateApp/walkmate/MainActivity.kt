@@ -1,12 +1,17 @@
 package com.WalkMateApp.walkmate
 
 import android.Manifest
+import android.app.Activity
+import android.content.Context
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -29,6 +34,7 @@ class MainActivity : ComponentActivity() {
         WalkMateViewModelFactory(this)
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -44,24 +50,41 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     @Composable
     private fun checkPermissionAndRequest(navController: NavController, activity: ComponentActivity) {
         val navBackStackEntry by navController.currentBackStackEntryAsState()
         val currentRoute = navBackStackEntry?.destination?.route
 
         if (currentRoute == "home") {
+            val missingPermissions = mutableListOf<String>()
+
             if (ContextCompat.checkSelfPermission(
                     activity,
                     Manifest.permission.ACTIVITY_RECOGNITION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
+                missingPermissions.add(Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        activity,
+                        Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    missingPermissions.add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+
+            if (missingPermissions.isNotEmpty()) {
                 ActivityCompat.requestPermissions(
                     activity,
-                    arrayOf(Manifest.permission.ACTIVITY_RECOGNITION),
+                    missingPermissions.toTypedArray(),
                     REQUEST_CODE_ACTIVITY_RECOGNITION
                 )
             } else {
-                // Permission is already granted, do something if needed
+                // Permissions are already granted, do something if needed
             }
         }
     }
@@ -69,10 +92,5 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         private const val REQUEST_CODE_ACTIVITY_RECOGNITION = 1
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.resetDataOnDayChange()
     }
 }

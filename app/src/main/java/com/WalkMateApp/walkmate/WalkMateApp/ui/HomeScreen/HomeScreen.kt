@@ -4,7 +4,9 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -71,6 +73,7 @@ import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
+import com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.CustomCircularProgress
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DropdownRowWithBarChart
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.GreetingRow
@@ -98,7 +101,7 @@ import java.util.Locale
 @Composable
 fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
-    val isWalking = remember { mutableStateOf(false) }
+    var isWalking = viewModel.isPlayingSelected.collectAsState().value
     val caloriesBurned by viewModel.caloriesBurned.collectAsState()
     val distanceCovered by viewModel.distanceCovered.collectAsState()
     val stepCount by viewModel.stepCount.collectAsState()
@@ -106,6 +109,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
     val seconds by viewModel.seconds.collectAsState()
     val minutes by viewModel.minutes.collectAsState()
     val hours by viewModel.hours.collectAsState()
+    val elapsedTime = viewModel.elapsedTime.collectAsState()
     val heartRate = viewModel.heartRate.collectAsState()
     val WaterGoal = viewModel.waterGoal.collectAsState()
     val WaterIntake = viewModel.waterIntake.collectAsState()
@@ -117,27 +121,41 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
     var showPermissionDeniedDialog by remember { mutableStateOf(false) }
     var showSensorNotSupportedDialog by remember { mutableStateOf(false) }
 
-    val requestPermissionLauncher =
-        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted: Boolean ->
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        permissions.entries.forEach {
+            val permissionName = it.key
+            val isGranted = it.value
             if (!isGranted) {
-                // showPermissionDeniedDialog = true
+                showPermissionDeniedDialog = true
             }
         }
+    }
 
     LaunchedEffect(Unit) {
         if (!isActivityRecognitionSupported(context)) {
-            // Check if permission is not granted
             showSensorNotSupportedDialog = true
         } else {
+            val permissionsToRequest = mutableListOf<String>()
             if (ContextCompat.checkSelfPermission(
                     context, Manifest.permission.ACTIVITY_RECOGNITION
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
-                // Request the permission
-                requestPermissionLauncher.launch(Manifest.permission.ACTIVITY_RECOGNITION)
+                permissionsToRequest.add(Manifest.permission.ACTIVITY_RECOGNITION)
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.POST_NOTIFICATIONS
+                    ) != PackageManager.PERMISSION_GRANTED
+                ) {
+                    permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+            if (permissionsToRequest.isNotEmpty()) {
+                requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
             }
         }
-
     }
 
 
@@ -145,7 +163,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
     Scaffold(
         topBar = {
-            if (!isWalking.value) {
+            if (!isWalking) {
                 HomeScreenTopBar(
                     onMenuClick = {
                         navController.navigate(ScreenRoutes.SettingsScreen.route)
@@ -174,7 +192,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             Spacer(modifier = Modifier.height(24.dp))
 
             Crossfade(
-                animationSpec = tween(400), targetState = isWalking.value
+                animationSpec = tween(400), targetState = isWalking
             ) { target ->
                 when (target) {
                     false -> {
@@ -197,7 +215,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                     indicatorValue = stepCount,
                                     foregroundIndicatorStrokeWidth = 26f,
                                     maxIndicatorValue = stepGoal,
-                                    isWalking = isWalking.value
+                                    isWalking = isWalking
                                 )
 
                                 Column(
@@ -207,8 +225,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                         .align(Alignment.Center)
                                 ) {
                                     Text(
-                                        text = "${stepCount}",
-                                        style = TextStyle(
+                                        text = "${stepCount}", style = TextStyle(
                                             fontSize = 18.sp,
                                             color = WalkMateThemes.colorScheme.textColor,
                                             fontWeight = FontWeight.Bold
@@ -230,7 +247,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .height(if (isWalking.value) 330.dp else 0.dp),
+                                .height(if (isWalking) 330.dp else 0.dp),
                             verticalArrangement = Arrangement.Center,
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
@@ -325,26 +342,55 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             )
                         )
                         .clickable {
-                            if (!isActivityRecognitionSupported(context)) {
-                                showSensorNotSupportedDialog = true
-                            } else {
-                                if (ContextCompat.checkSelfPermission(
-                                        context, Manifest.permission.ACTIVITY_RECOGNITION
-                                    ) == PackageManager.PERMISSION_GRANTED
-                                ) {
-                                    isWalking.value = !isWalking.value
-                                } else {
-                                    // Permission is not granted, show the dialog
-                                    showPermissionDeniedDialog = true
-                                }
-                            }
+                            handleWalkingToggle(
+                                context = context,
+                                viewModel = viewModel,
+                                isWalking = isWalking,
+                                stepCount = stepCount,
+                                elapsedTime = elapsedTime.value,
+                                updateIsWalking = { newIsWalking -> isWalking = newIsWalking },
+                                showSensorNotSupportedDialog = { showSensorNotSupportedDialog = true },
+                                showPermissionDeniedDialog = { showPermissionDeniedDialog = true }
+                            )
+                        }
 
-                        },
+                    /*.clickable {
+                        if (!isActivityRecognitionSupported(context)) {
+                            showSensorNotSupportedDialog = true
+                        } else {
+                            if (ContextCompat.checkSelfPermission(
+                                    context, Manifest.permission.ACTIVITY_RECOGNITION
+                                ) == PackageManager.PERMISSION_GRANTED
+                            ) {
+                                isWalking = !isWalking
+                                viewModel.updatePlayPause(isWalking)
+                                if (isWalking){
+                                    viewModel.startStepCounter()
+                                    viewModel.startTimer()
+
+                                    val intent = Intent(context, StepCountService::class.java)
+                                    intent.putExtra("stepCount", stepCount)
+                                    intent.putExtra("elapsedTime", elapsedTime.value)
+                                    context.startForegroundService(intent)
+                                }else{
+                                    viewModel.stopTimer()
+                                    viewModel.stopSensor()
+                                    val intent = Intent(context, StepCountService::class.java)
+                                    context.stopService(intent)
+                                }
+
+                            } else {
+                                // Permission is not granted, show the dialog
+                                showPermissionDeniedDialog = true
+                            }
+                        }
+
+                    }*/,
 
                     ) {
                     Icon(
                         painter = painterResource(
-                            id = if (isWalking.value) R.drawable.pauseicon else R.drawable.playicon
+                            id = if (isWalking) R.drawable.pauseicon else R.drawable.playicon
                         ),
                         contentDescription = "Play",
                         tint = WalkMateThemes.colorScheme.tint,
@@ -461,7 +507,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 exit = fadeOut() + shrinkVertically(
                     animationSpec = tween(1000)
                 ),
-                visible = !isWalking.value,
+                visible = !isWalking,
             ) {
                 Column {
 
@@ -479,23 +525,21 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             }
 
             AnimatedVisibility(
-                visible = !isWalking.value,
+                visible = !isWalking,
             ) {
                 DropdownRowWithBarChart(viewModel)
             }
         }
 
-
-        if (isWalking.value) {
+        if (isWalking) {
             viewModel.startStepCounter()
             viewModel.startTimer()
-
         } else {
             viewModel.stopTimer()
             viewModel.stopSensor()
         }
 
-        if (stepCount == stepGoal && isWalking.value) {
+        if (stepCount == stepGoal && isWalking) {
             StepGoalReachedAnimation(composition = compositionHeart!!, timeoutMillis = 6000L)
         }
 
@@ -506,7 +550,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             context = context
         )
         showSensorNotSupported(showSensorNotSupportedDialog, context)
-        DayChangeObserver(context = context,viewModel=viewModel)
+        DayChangeObserver(context = context, viewModel = viewModel)
 
     }
 }
@@ -585,20 +629,63 @@ fun StepGoalReachedAnimation(composition: LottieComposition, timeoutMillis: Long
 
 @Composable
 fun DayChangeObserver(context: Context, viewModel: WalkMateViewModel) {
-    val currentDayOfWeek = remember {
-        mutableStateOf(
-            Calendar.getInstance().getDisplayName(
-                Calendar.DAY_OF_WEEK,
-                Calendar.LONG,
-                Locale.getDefault()
-            )
-        )
+    val currentTime = remember { mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE)) }
+
+    LaunchedEffect(Unit) {
+        while (true) {
+            val now = Calendar.getInstance()
+            val newMinute = now.get(Calendar.MINUTE)
+
+            if (currentTime.value != newMinute) {
+                currentTime.value = newMinute
+                viewModel.resetDataOnDayChange()
+            //    Toast.makeText(context,"${currentTime.value}",Toast.LENGTH_SHORT).show()
+            }
+
+            // Calculate the delay until the start of the next minute
+            val delayMillis = (60 - now.get(Calendar.SECOND)) * 1000L
+            delay(delayMillis)
+        }
     }
 
-    LaunchedEffect(currentDayOfWeek.value) {
-        viewModel.resetDataOnDayChange()
-        Toast.makeText(context,"wow your logic is working",Toast.LENGTH_SHORT).show()
-        Log.d("TAG", "DayChangeObserver: ${currentDayOfWeek.value}")
+}
+fun handleWalkingToggle(
+    context: Context,
+    viewModel: WalkMateViewModel,
+    isWalking: Boolean,
+    stepCount: Int,
+    elapsedTime: Long,
+    updateIsWalking: (Boolean) -> Unit,
+    showSensorNotSupportedDialog: () -> Unit,
+    showPermissionDeniedDialog: () -> Unit
+) {
+    if (!isActivityRecognitionSupported(context)) {
+        showSensorNotSupportedDialog()
+    } else {
+        if (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.ACTIVITY_RECOGNITION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            val newIsWalking = !isWalking
+            updateIsWalking(newIsWalking)
+            viewModel.updatePlayPause(newIsWalking)
+            if (newIsWalking) {
+              //  viewModel.startStepCounter()
+                //viewModel.startTimer()
+
+                val intent = Intent(context, StepCountService::class.java)
+                intent.putExtra("stepCount", stepCount)
+                intent.putExtra("elapsedTime", elapsedTime)
+                context.startForegroundService(intent)
+            } else {
+                //viewModel.stopTimer()
+                //viewModel.stopSensor()
+                val intent = Intent(context, StepCountService::class.java)
+                context.stopService(intent)
+            }
+        } else {
+            // Permission is not granted, show the dialog
+            showPermissionDeniedDialog()
+        }
     }
 }
-
