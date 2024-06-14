@@ -65,7 +65,7 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
                     _stepCount.value++
                     updateCaloriesBurnedAndDistanceCovered()
                     saveStepCount(_stepCount.value)
-                    estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
+                    estimateHeartRate(elapsedTime = _elapsedTime.value, stepCount = stepCount.value)
                 }
             }
         }
@@ -88,7 +88,9 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
     private var timerStarted = false
     private var startTime = 0L
-    private var elapsedTime = 0L
+   //  var elapsedTime = 0L
+    private val _elapsedTime = MutableStateFlow(0L)
+    val elapsedTime: StateFlow<Long> = _elapsedTime
 
     private val handler = Handler(Looper.getMainLooper())
 
@@ -113,28 +115,30 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
     // LiveData for heart rate
     private val _heartRate = MutableStateFlow(0)
-    val heartRate: StateFlow<Int> =  _heartRate
+    val heartRate: StateFlow<Int> = _heartRate
 
     // LiveData for Water Bottle Ml
     private val _waterML = MutableStateFlow(0)
     val waterML: StateFlow<Int> = _waterML
 
     // LiveData for Water Intake
-    private val _waterIntake= MutableStateFlow(0)
+    private val _waterIntake = MutableStateFlow(0)
     val waterIntake: StateFlow<Int> = _waterIntake
 
     // LiveData for Water Goal
-    private val _waterGoal= MutableStateFlow(0)
+    private val _waterGoal = MutableStateFlow(0)
     val waterGoal: StateFlow<Int> = _waterGoal
 
     // LiveData for Water Goal
-    private val _isUserAccountCreated= MutableStateFlow(false)
+    private val _isUserAccountCreated = MutableStateFlow(false)
     val isUserAccountCreated: StateFlow<Boolean> = _isUserAccountCreated
 
     // LiveData for Theme
     private val _currentTheme = MutableStateFlow("")
     val currentTheme: StateFlow<String> = _currentTheme
 
+    private val _isPlayingSelected = MutableStateFlow(false)
+    val isPlayingSelected: StateFlow<Boolean> = _isPlayingSelected
 
 
     init {
@@ -144,14 +148,14 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
         // Load saved timer state and elapsed time
         resetElapsedTimeIfWeekChanged()
-       // elapsedTime = sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
+        // elapsedTime = sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
         //updateTimerValues(elapsedTime)
 
         //reset the step days on monday
         resetStepCountsOnWeekend()
 
         //update the bpm
-        estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
+        estimateHeartRate(elapsedTime = _elapsedTime.value, stepCount = stepCount.value)
 
         // Retrieve initial value from SharedPreferences of Water Bottle ML
         _waterML.value = getWaterML().toInt()
@@ -168,6 +172,8 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         _isUserAccountCreated.value = getUserAccountCreated()
 
         _currentTheme.value = getTheme()
+
+        _isPlayingSelected.value = getPlayPause()
 
     }
 
@@ -200,23 +206,22 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         sharedPreferencesHelper.saveData("stepGoal", newStepGoal)
     }
 
-    /*fun saveStepCount(steps: Int) {
-        sharedPreferencesHelper.saveData("stepCount", steps.toString())
-    }*/
     fun saveStepCount(steps: Int) {
-        val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
-        val saveLastDay =  sharedPreferencesHelper.getData("lastDaySaved", "0")
-        if (currentDayOfWeek != saveLastDay){
+        val currentDayOfWeek = Calendar.getInstance()
+            .getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val saveLastDay = sharedPreferencesHelper.getData("lastDaySaved", "0")
+        if (currentDayOfWeek != saveLastDay) {
             _stepCount.value = 0
             sharedPreferencesHelper.saveData("lastDaySaved", currentDayOfWeek!!)
-        }else{
+        } else {
             sharedPreferencesHelper.saveData(currentDayOfWeek, steps.toString())
 
         }
     }
 
     fun resetDataOnDayChange() {
-        val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val currentDayOfWeek = Calendar.getInstance()
+            .getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         val lastRecordedDay = sharedPreferencesHelper.getData("lastRecordedDay", "0")
 
         if (currentDayOfWeek != lastRecordedDay) {
@@ -230,7 +235,10 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
             updateWaterIntake("0")
             resetWaterIntakeIfDayChanged()
 
-            estimateHeartRate(elapsedTime = elapsedTime, stepCount = stepCount.value)
+            estimateHeartRate(elapsedTime = _elapsedTime.value, stepCount = stepCount.value)
+
+            _elapsedTime.value = 0L
+            sharedPreferencesHelper.saveData("elapsedTime", "0")
 
             sharedPreferencesHelper.saveData("lastRecordedDay", currentDayOfWeek!!)
         }
@@ -268,29 +276,33 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     }
 
 
-    fun updateStepCount(){
+    fun updateStepCount() {
         _stepCount.value = getStepsForCurrentDay()
-       // _stepCount.value = getSavedStepCount()
+        // _stepCount.value = getSavedStepCount()
     }
-    fun updateCaloriesBurnedAndDistanceCovered(){
+
+    fun updateCaloriesBurnedAndDistanceCovered() {
         _caloriesBurned.value = calculateCaloriesBurned(_stepCount.value)
         _distanceCovered.value = calculateDistanceCovered(_stepCount.value)
     }
+
     fun resetElapsedTimeIfWeekChanged() {
         val lastSavedDay = sharedPreferencesHelper.getData("lastSavedDay", "")
-        val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val currentDayOfWeek = Calendar.getInstance()
+            .getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
 
         // If the current day is different from the last saved day, reset elapsedTime and save the current day
         if (currentDayOfWeek != lastSavedDay) {
             sharedPreferencesHelper.saveData("elapsedTime", "0")
             sharedPreferencesHelper.saveData("lastSavedDay", currentDayOfWeek!!)
-            elapsedTime = 0L
+            _elapsedTime.value = 0L
         } else {
-            elapsedTime = sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
+            _elapsedTime.value = sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
         }
 
-        updateTimerValues(elapsedTime)
+        updateTimerValues(_elapsedTime.value)
     }
+
     fun updateWaterML(newWaterML: String) {
         _waterML.value = newWaterML.toInt()
         sharedPreferencesHelper.saveData("newWaterML", newWaterML)
@@ -301,10 +313,12 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         _waterIntake.value = newWaterIntake.toInt()
         sharedPreferencesHelper.saveData("newWaterIntake", newWaterIntake)
     }
+
     fun updateWaterGoal(newWaterGoal: String) {
         _waterGoal.value = newWaterGoal.toInt()
         sharedPreferencesHelper.saveData("newWaterGoal", newWaterGoal)
     }
+
     fun resetWaterIntakeIfDayChanged() {
         val currentDayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK)
         val lastSavedDayOfWeek = sharedPreferencesHelper.getData("lastSavedDayOfWeek", "0")
@@ -316,15 +330,21 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
             sharedPreferencesHelper.saveData("lastSavedDayOfWeek", currentDayOfWeek.toString())
         }
     }
+
     fun updateUserAccountCreated(AccountCreated: Boolean) {
         _isUserAccountCreated.value = AccountCreated
         sharedPreferencesHelper.saveBoolean("AccountCreated", AccountCreated)
     }
-    fun updateTheme(newTheme:String) {
+
+    fun updateTheme(newTheme: String) {
         _currentTheme.value = newTheme
         sharedPreferencesHelper.saveData("newTheme", newTheme)
     }
 
+    fun updatePlayPause(isPlayingSelected: Boolean) {
+        _isPlayingSelected.value = isPlayingSelected
+        sharedPreferencesHelper.saveBoolean("isPlayingSelected", isPlayingSelected)
+    }
 
 
     // Functions to retrieve values
@@ -347,11 +367,13 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     fun isKgSelected(): Boolean {
         return sharedPreferencesHelper.getBoolean("isKgSelected", true)
     }
-    fun getStepGoal():String {
+
+    fun getStepGoal(): String {
         val stepGoalString = sharedPreferencesHelper.getData("stepGoal", "0")
         _stepGoal.value = stepGoalString
         return stepGoalString
     }
+
     fun getName(): String {
         return sharedPreferencesHelper.getData("name", "")
     }
@@ -365,18 +387,22 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         val dateFormat = SimpleDateFormat("EEE, dd MMM yyyy", Locale.getDefault())
         return dateFormat.format(calendar.time)
     }
+
     fun getStepsForCurrentDay(): Int {
-        val currentDayOfWeek = Calendar.getInstance().getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
+        val currentDayOfWeek = Calendar.getInstance()
+            .getDisplayName(Calendar.DAY_OF_WEEK, Calendar.LONG, Locale.getDefault())
         return sharedPreferencesHelper.getData(currentDayOfWeek!!, "0").toInt()
     }
+
     fun getStepsForDay(day: String): Int {
         return sharedPreferencesHelper.getData(day, "0").toInt()
     }
 
-
+    fun getPlayPause():Boolean {
+        return sharedPreferencesHelper.getBoolean("isPlayingSelected", false)
+    }
 
     fun startStepCounter() {
-       // updateStepCount()
         sensorManager.registerListener(
             sensorEventListener,
             stepDetectorSensor,
@@ -389,16 +415,19 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     fun stopSensor() {
         sensorManager.unregisterListener(sensorEventListener)
     }
+
     private fun calculateCaloriesBurned(steps: Int): Double {
         val avgCaloriesPerStep = 0.04
         val caloriesBurned = steps * avgCaloriesPerStep
         return String.format("%.2f", caloriesBurned).toDouble()
     }
+
     private fun calculateDistanceCovered(steps: Int): Double {
         val averageStepsPerKilometer = 1375.0
         val distanceKilometers = steps / averageStepsPerKilometer
         return String.format("%.2f", distanceKilometers).toDouble()
     }
+
     private fun estimateHeartRate(elapsedTime: Long, stepCount: Int) {
         // Convert elapsed time to minutes
         val elapsedTimeMinutes = elapsedTime / (1000 * 60).toFloat()
@@ -421,28 +450,32 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         _heartRate.value = heartRate
     }
 
-    fun getWaterML():String {
+    fun getWaterML(): String {
         return sharedPreferencesHelper.getData("newWaterML", "100")
     }
-    fun getWaterIntake():String {
+
+    fun getWaterIntake(): String {
         return sharedPreferencesHelper.getData("newWaterIntake", "0")
     }
-    fun getWaterGoal():String {
+
+    fun getWaterGoal(): String {
         return sharedPreferencesHelper.getData("newWaterGoal", "0")
     }
-    fun getUserAccountCreated():Boolean {
+
+    fun getUserAccountCreated(): Boolean {
         return sharedPreferencesHelper.getBoolean("AccountCreated", false)
     }
-    fun getTheme():String {
-         return sharedPreferencesHelper.getData("newTheme", "1")
+
+    fun getTheme(): String {
+        return sharedPreferencesHelper.getData("newTheme", "1")
     }
 
     fun startTimer() {
         if (!timerStarted) {
-            startTime = if (elapsedTime == 0L) {
+            startTime = if (_elapsedTime.value == 0L) {
                 System.currentTimeMillis()
             } else {
-                System.currentTimeMillis() - elapsedTime
+                System.currentTimeMillis() - _elapsedTime.value
             }
             timerStarted = true
             sharedPreferencesHelper.saveData("timerRunning", "true")
@@ -454,11 +487,12 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         if (timerStarted) {
             timerStarted = false
             handler.removeCallbacks(timerRunnable)
-            elapsedTime = System.currentTimeMillis() - startTime
-            sharedPreferencesHelper.saveData("elapsedTime", elapsedTime.toString())
+            _elapsedTime.value = System.currentTimeMillis() - startTime
+            sharedPreferencesHelper.saveData("elapsedTime", _elapsedTime.value.toString())
             sharedPreferencesHelper.saveData("timerRunning", "false")
         }
     }
+
     private fun updateTimerValues(elapsedTime: Long) {
         val secondsElapsed = (elapsedTime / 1000).toInt()
         _seconds.value = secondsElapsed % 60

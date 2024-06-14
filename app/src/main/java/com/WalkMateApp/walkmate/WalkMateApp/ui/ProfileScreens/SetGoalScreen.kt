@@ -125,7 +125,7 @@ fun SetGoalScreen(navController: NavController, viewModel: WalkMateViewModel) {
             }
             Spacer(modifier = Modifier.weight(1f))
             PrivacyNoticeAndConfirmButton(onNavigateClick = {
-                if (!stepError.value && !waterError.value) {
+                if (!stepError.value && !waterError.value && stepGoalTextField.value.isNotEmpty() && waterGoalTextField.value.isNotEmpty()) {
                     navController.navigate(ScreenRoutes.HomeScreen.route)
                     viewModel.updateUserAccountCreated(true)
                 } else {
