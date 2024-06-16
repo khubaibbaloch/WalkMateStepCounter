@@ -17,6 +17,7 @@ import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.HeightScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.SetGoalScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.UserNameScreens
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ProfileScreens.WeightScreen
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ReminderScreen.ReminderScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.SettingsScreen.SettingsScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.StatisticsScreen.StatisticsScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.UpdateProfile.UpdateGenderScreen
@@ -87,6 +88,9 @@ fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel)
         }
         composable(ScreenRoutes.AboutYouScreen.route) {
             AboutYouScreen(navController = navController,viewModel=viewModel)
+        }
+        composable(ScreenRoutes.ReminderScreen.route) {
+            ReminderScreen(navController = navController,viewModel=viewModel)
         }
     }
 }

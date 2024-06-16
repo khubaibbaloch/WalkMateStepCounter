@@ -100,7 +100,7 @@ fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "Reminder",
                     icon = R.drawable.bellicon,
                     iconSize = 20.dp,
-                    onClick = {}
+                    onClick = {navController.navigate(ScreenRoutes.ReminderScreen.route)}
                 )
             }
 
