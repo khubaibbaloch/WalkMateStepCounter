@@ -199,6 +199,7 @@ class StepCountService : Service() {
     private var elapsedTime = 0L
     private var startTime = 0L
 
+
     private lateinit var sharedPreferencesHelper: SharedPreferencesHelper
     private lateinit var timer: Timer
 
@@ -316,6 +317,7 @@ class StepCountService : Service() {
         if (currentDayOfWeek != saveLastDay) {
             stepCount = 0
             sharedPreferencesHelper.saveData("lastDaySaved", currentDayOfWeek!!)
+            updateNotification(stepCount, stepGoal, calories)
         } else {
             sharedPreferencesHelper.saveData(currentDayOfWeek, steps.toString())
         }

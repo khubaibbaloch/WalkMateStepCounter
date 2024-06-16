@@ -2,6 +2,7 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.app.AlarmManager
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
@@ -157,6 +158,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             }
         }
     }
+
 
 
 

@@ -1,12 +1,17 @@
 package com.WalkMateApp.walkmate.WalkMateApp.MainViewModel
 
 import android.Manifest
+import android.annotation.SuppressLint
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.os.Build
 import android.os.CountDownTimer
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +20,7 @@ import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.helperClasses.SharedPreferencesHelper
+import com.WalkMateApp.walkmate.WalkMateApp.service.ReminderBroadcastReceiver
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -88,7 +94,8 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
     private var timerStarted = false
     private var startTime = 0L
-   //  var elapsedTime = 0L
+
+    //  var elapsedTime = 0L
     private val _elapsedTime = MutableStateFlow(0L)
     val elapsedTime: StateFlow<Long> = _elapsedTime
 
@@ -140,6 +147,18 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     private val _isPlayingSelected = MutableStateFlow(false)
     val isPlayingSelected: StateFlow<Boolean> = _isPlayingSelected
 
+    private val _ReminderHour = MutableStateFlow("12")
+    val ReminderHour: StateFlow<String> = _ReminderHour
+
+    private val _ReminderMinute = MutableStateFlow("00")
+    val ReminderMinute: StateFlow<String> = _ReminderMinute
+
+    private val _ReminderZone = MutableStateFlow("AM")
+    val ReminderZone: StateFlow<String> = _ReminderZone
+
+    private val _isReminderEnabled = MutableStateFlow(false)
+    val isReminderEnabled: StateFlow<Boolean> = _isReminderEnabled
+
 
     init {
         // Initialize _stepCount with the saved count
@@ -175,6 +194,11 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
         _isPlayingSelected.value = getPlayPause()
 
+
+        _ReminderHour.value = getReminderHour()
+        _ReminderMinute.value = getReminderMinutes()
+        _ReminderZone.value = getReminderZone()
+        _isReminderEnabled.value = getReminderEnabled()
     }
 
     // Functions to update values
@@ -297,7 +321,8 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
             sharedPreferencesHelper.saveData("lastSavedDay", currentDayOfWeek!!)
             _elapsedTime.value = 0L
         } else {
-            _elapsedTime.value = sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
+            _elapsedTime.value =
+                sharedPreferencesHelper.getData("elapsedTime", "0").toLongOrNull() ?: 0L
         }
 
         updateTimerValues(_elapsedTime.value)
@@ -344,6 +369,22 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
     fun updatePlayPause(isPlayingSelected: Boolean) {
         _isPlayingSelected.value = isPlayingSelected
         sharedPreferencesHelper.saveBoolean("isPlayingSelected", isPlayingSelected)
+    }
+    fun SetReminderTime(hours: String, minutes: String, zone: String) {
+        _ReminderHour.value = hours
+        _ReminderMinute.value = minutes
+        _ReminderZone.value = zone
+        sharedPreferencesHelper.saveData("Hours", hours)
+        sharedPreferencesHelper.saveData("Minutes", minutes)
+        sharedPreferencesHelper.saveData("Zone", zone)
+    }
+
+    fun setReminderEnabled(ReminderEnabled: Boolean) {
+        _isReminderEnabled.value = ReminderEnabled
+        sharedPreferencesHelper.saveBoolean("ReminderEnabled", ReminderEnabled)
+    }
+    fun setReminderSelectedDays(SelectedDays:String){
+        sharedPreferencesHelper.saveData("SelectedDays", SelectedDays)
     }
 
 
@@ -398,7 +439,7 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         return sharedPreferencesHelper.getData(day, "0").toInt()
     }
 
-    fun getPlayPause():Boolean {
+    fun getPlayPause(): Boolean {
         return sharedPreferencesHelper.getBoolean("isPlayingSelected", false)
     }
 
@@ -470,6 +511,21 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
         return sharedPreferencesHelper.getData("newTheme", "1")
     }
 
+    fun getReminderHour():String {
+        return sharedPreferencesHelper.getData("Hours", "12")
+    }
+    fun getReminderMinutes():String {
+        return sharedPreferencesHelper.getData("Minutes", "00")
+    }
+    fun getReminderZone():String {
+        return sharedPreferencesHelper.getData("Zone", "AM")
+    }
+    fun getReminderEnabled():Boolean {
+         return sharedPreferencesHelper.getBoolean("ReminderEnabled", false)
+    }
+    fun getReminderSelectedDays():String{
+        return sharedPreferencesHelper.getData("SelectedDays", "Monday")
+    }
     fun startTimer() {
         if (!timerStarted) {
             startTime = if (_elapsedTime.value == 0L) {
@@ -502,6 +558,105 @@ class WalkMateViewModel(private val context: Context) : ViewModel() {
 
         _hours.value = minutesElapsed / 60
     }
+
+
+    @SuppressLint("ScheduleExactAlarm")
+    fun setReminder(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+        // Retrieve saved reminder time and selected weekdays from SharedPreferences
+        val savedHour = sharedPreferencesHelper.getData("Hours", "0")?.toIntOrNull() ?: 0
+        val savedMinute = sharedPreferencesHelper.getData("Minutes", "0")?.toIntOrNull() ?: 0
+        val savedZone = sharedPreferencesHelper.getData("Zone", "PM") ?: "AM"
+        val savedSelectedDays = sharedPreferencesHelper.getData("SelectedDays", "") ?: ""
+
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = System.currentTimeMillis()
+
+            // Calculate the target time based on saved hour, minute, and AM/PM settings
+            set(Calendar.HOUR_OF_DAY, if (savedZone == "PM" && savedHour != 12) savedHour + 12 else savedHour)
+            set(Calendar.MINUTE, savedMinute)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+
+            // Check if the target time is in the past for today
+            if (timeInMillis <= System.currentTimeMillis()) {
+                add(Calendar.DAY_OF_YEAR, 1) // Schedule for tomorrow if the time has passed for today
+            }
+        }
+
+        val currentDayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+        // Check if the savedSelectedDays contains the current day of the week
+        if (savedSelectedDays.isNotEmpty()) {
+            val selectedDays = savedSelectedDays.split(",")
+            val today = calendar.get(Calendar.DAY_OF_WEEK)
+            val isTodaySelected = selectedDays.contains(getDayOfWeekString(today))
+
+            if (isTodaySelected) {
+                val intent = Intent(context, ReminderBroadcastReceiver::class.java).apply {
+                    action = "com.example.walkmate.REMINDER_NOTIFICATION"
+                }
+
+                val pendingIntent = PendingIntent.getBroadcast(
+                    context,
+                    0,
+                    intent,
+                    PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                )
+
+                // Set the alarm at the calculated time
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    alarmManager.setExactAndAllowWhileIdle(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                    alarmManager.setExact(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                } else {
+                    alarmManager.set(
+                        AlarmManager.RTC_WAKEUP,
+                        calendar.timeInMillis,
+                        pendingIntent
+                    )
+                }
+            }
+        }
+    }
+
+    // Utility function to get day of week string representation
+    private fun getDayOfWeekString(dayOfWeek: Int): String {
+        return when (dayOfWeek) {
+            Calendar.SUNDAY -> "Sunday"
+            Calendar.MONDAY -> "Monday"
+            Calendar.TUESDAY -> "Tuesday"
+            Calendar.WEDNESDAY -> "Wednesday"
+            Calendar.THURSDAY -> "Thursday"
+            Calendar.FRIDAY -> "Friday"
+            Calendar.SATURDAY -> "Saturday"
+            else -> ""
+        }
+    }
+
+
+
+    fun cancelReminder(context: Context) {
+        val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+        val intent = Intent(context, ReminderBroadcastReceiver::class.java)
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+        alarmManager.cancel(pendingIntent)
+    }
+
 
     override fun onCleared() {
         super.onCleared()

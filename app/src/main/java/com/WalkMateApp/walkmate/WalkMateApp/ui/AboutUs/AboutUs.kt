@@ -96,7 +96,7 @@ fun AboutUsScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = "Version 1.0.0",
+                text = "Version 1.1.1",
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 color =  WalkMateThemes.colorScheme.textColor

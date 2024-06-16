@@ -261,8 +261,9 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
             },
             text = {
                 Column(
+                    modifier = Modifier.fillMaxWidth(),
                     verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
+                    horizontalAlignment = Alignment.Start
                 ) {
                     Text(
                         text = buildAnnotatedString {
@@ -279,7 +280,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         fontSize = 14.sp,
                         color = WalkMateThemes.colorScheme.textColor,
                     )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
                         value = FootstepUserInput.value,
@@ -368,8 +369,9 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
             }
         }, text = {
             Column(
+                modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally
+                horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = buildAnnotatedString {
@@ -386,7 +388,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     fontSize = 14.sp,
                     color = WalkMateThemes.colorScheme.textColor,
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 OutlinedTextField(
                     value = WaterIntakeUserInput.value,
@@ -432,7 +434,8 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
             onDismissRequest = {
                 isThemeClicked.value = false
                 // Update theme when dialog is dismissed
-                if (currentTheme.value == "2")  isLightThemeSelected.value = true else   isLightThemeSelected.value = false
+                if (currentTheme.value == "2") isLightThemeSelected.value =
+                    true else isLightThemeSelected.value = false
 
             },
             confirmButton = {
