@@ -26,6 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
@@ -48,7 +49,11 @@ fun UpdateUserNameScreens(navController: NavController, viewModel: WalkMateViewM
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -89,7 +94,11 @@ fun UpdateUserNameScreens(navController: NavController, viewModel: WalkMateViewM
                 if (localName.value.isNotEmpty() && localAge.value.isNotEmpty()) {
                     // Update ViewModel with the local state values
                     viewModel.updateNameAndAge(name = localName.value, age = localAge.value)
-                    navController.navigate(ScreenRoutes.UpdateGenderScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.UpdateGenderScreen.route)
+                    }
                 } else {
                     Toast.makeText(context, "Please enter name and age", Toast.LENGTH_SHORT).show()
                 }
@@ -97,7 +106,6 @@ fun UpdateUserNameScreens(navController: NavController, viewModel: WalkMateViewM
         }
     }
 }
-
 
 
 @OptIn(ExperimentalMaterial3Api::class)

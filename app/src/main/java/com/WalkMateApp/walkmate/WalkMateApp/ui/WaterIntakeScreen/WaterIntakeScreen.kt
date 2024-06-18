@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
@@ -52,10 +53,18 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
         topBar = {
             WaterIntakeTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 },
                 onProfileClick = {
-                    navController.navigate(ScreenRoutes.SettingsScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.SettingsScreen.route)
+                    }
                 }
             )
         }

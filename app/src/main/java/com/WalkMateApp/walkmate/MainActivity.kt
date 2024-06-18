@@ -27,6 +27,7 @@ import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModelFactory
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.RootNavGraph
+import com.WalkMateApp.walkmate.WalkMateApp.ui.AboutYou.AboutYouScreen
 import com.WalkMateApp.walkmate.ui.theme.WalkMateTheme
 
 

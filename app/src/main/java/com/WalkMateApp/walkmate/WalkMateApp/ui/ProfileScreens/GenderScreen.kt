@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
@@ -59,7 +60,11 @@ fun GenderScreen(navController: NavController, viewModel: WalkMateViewModel) {
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -82,7 +87,11 @@ fun GenderScreen(navController: NavController, viewModel: WalkMateViewModel) {
             Spacer(modifier = Modifier.weight(1f))
             PrivacyNoticeAndConfirmButton(onNavigateClick = {
                 if (selectedGender.value.isNotEmpty()) {
-                    navController.navigate(ScreenRoutes.HeightScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.HeightScreen.route)
+                    }
                 } else {
                     Toast.makeText(context, "Please select a gender", Toast.LENGTH_SHORT).show()
                 }

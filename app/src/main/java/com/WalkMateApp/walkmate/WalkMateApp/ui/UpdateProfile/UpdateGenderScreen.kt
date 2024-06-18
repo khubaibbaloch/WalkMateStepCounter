@@ -32,6 +32,7 @@ import androidx.compose.ui.graphics.Color.Companion.LightGray
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
@@ -53,7 +54,11 @@ fun UpdateGenderScreen(navController: NavController, viewModel: WalkMateViewMode
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -78,7 +83,12 @@ fun UpdateGenderScreen(navController: NavController, viewModel: WalkMateViewMode
                 if (localGender.value.isNotEmpty()) {
                     // Update ViewModel with the local state value
                     viewModel.updateGender(localGender.value)
-                    navController.navigate(ScreenRoutes.UpdateHeightScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.UpdateHeightScreen.route)
+                    }
+
                 } else {
                     Toast.makeText(context, "Please select a gender", Toast.LENGTH_SHORT).show()
                 }

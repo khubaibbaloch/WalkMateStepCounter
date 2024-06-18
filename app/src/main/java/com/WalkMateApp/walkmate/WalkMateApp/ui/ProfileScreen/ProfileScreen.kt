@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
@@ -57,7 +58,11 @@ fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -93,14 +98,26 @@ fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "About you",
                     icon = R.drawable.usericon,
                     iconSize = 18.dp,
-                    onClick = {navController.navigate(ScreenRoutes.AboutYouScreen.route)}
+                    onClick = {
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.AboutYouScreen.route)
+                        }
+                    }
                 )
                 ProfileItemCard(
                     modifier = Modifier.weight(1f),
                     mainText = "Reminder",
                     icon = R.drawable.bellicon,
                     iconSize = 20.dp,
-                    onClick = {navController.navigate(ScreenRoutes.ReminderScreen.route)}
+                    onClick = {
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.ReminderScreen.route)
+                        }
+                    }
                 )
             }
 
@@ -163,19 +180,26 @@ fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
             if (isEditProfileClicked.value) {
                 AlertDialog(
                     containerColor = WalkMateThemes.colorScheme.onBackground,
-                    onDismissRequest = {isEditProfileClicked.value = false},
+                    onDismissRequest = { isEditProfileClicked.value = false },
                     title = {
-                        Text(text = "Confirm Edit Profile", color = WalkMateThemes.colorScheme.textColor)
+                        Text(
+                            text = "Confirm Edit Profile",
+                            color = WalkMateThemes.colorScheme.textColor
+                        )
                     },
                     text = {
-                        Text("Are you sure you want to edit your profile data? This will not affect other data.", color = WalkMateThemes.colorScheme.textColor)
+                        Text(
+                            "Are you sure you want to edit your profile data? This will not affect other data.",
+                            color = WalkMateThemes.colorScheme.textColor
+                        )
                     },
                     confirmButton = {
                         Button(
                             onClick = {
                                 isEditProfileClicked.value = false
                                 navController.navigate(ScreenRoutes.UpdateUserNameScreen.route)
-                            },colors = ButtonDefaults.buttonColors(Color.LightGray),
+                            },
+                            colors = ButtonDefaults.buttonColors(Color.LightGray),
                         ) {
                             Text("Confirm", color = Color.Black)
                         }
@@ -184,7 +208,7 @@ fun ProfileScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         Button(
                             onClick = {
                                 isEditProfileClicked.value = false
-                            },colors = ButtonDefaults.buttonColors(Color.LightGray)
+                            }, colors = ButtonDefaults.buttonColors(Color.LightGray)
                         ) {
                             Text("Cancel", color = Color.Black)
                         }
