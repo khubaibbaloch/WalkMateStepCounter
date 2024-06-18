@@ -1,5 +1,10 @@
 package com.WalkMateApp.walkmate.WalkMateApp.navGraph
 
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
@@ -32,7 +37,19 @@ fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel)
     val isUserAccountCreated = viewModel.isUserAccountCreated.collectAsState()
     NavHost(
         navController = navController,
-        startDestination = if (isUserAccountCreated.value) ScreenRoutes.HomeScreen.route else ScreenRoutes.UserNameScreen.route
+        startDestination = if (isUserAccountCreated.value) ScreenRoutes.HomeScreen.route else ScreenRoutes.UserNameScreen.route,
+        enterTransition = {
+            fadeIn(animationSpec = tween(200))
+        },
+        exitTransition = {
+             fadeOut(animationSpec = tween(200))
+        },
+        popEnterTransition = {  fadeIn(
+                animationSpec = tween(200))
+        },
+        popExitTransition = {
+             fadeOut(animationSpec = tween(200))
+        }
     ) {
         composable(ScreenRoutes.HomeScreen.route) {
             HomeScreen(navController = navController, viewModel = viewModel)

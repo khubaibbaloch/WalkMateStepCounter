@@ -35,6 +35,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
@@ -55,7 +56,11 @@ fun WeightScreen(navController: NavController,viewModel: WalkMateViewModel) {
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -90,7 +95,12 @@ fun WeightScreen(navController: NavController,viewModel: WalkMateViewModel) {
             Spacer(modifier = Modifier.weight(1f))
             PrivacyNoticeAndConfirmButton(onNavigateClick = {
                 if (weightText.isNotEmpty()) {
-                    navController.navigate(ScreenRoutes.SetGoalScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.SetGoalScreen.route)
+                    }
+
                 } else {
                     Toast.makeText(context, "Please add height", Toast.LENGTH_SHORT).show()
                 }

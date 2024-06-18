@@ -51,6 +51,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
@@ -89,9 +90,18 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
     Scaffold(topBar = {
         SettingsTopBar(onBackArrowClick = {
-            navController.popBackStack()
+            if (navController.currentBackStackEntry?.lifecycle?.currentState
+                == Lifecycle.State.RESUMED
+            ) {
+                navController.popBackStack()
+            }
         }, onProfileClick = {
-            navController.navigate(ScreenRoutes.ProfileScreen.route)
+            if (navController.currentBackStackEntry?.lifecycle?.currentState
+                == Lifecycle.State.RESUMED
+            ) {
+                navController.navigate(ScreenRoutes.ProfileScreen.route)
+            }
+
         }, viewModel.getGender())
     }) {
         Column(
@@ -139,7 +149,11 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "Statistics",
                     smallText = "Today's",
                     onCardClick = {
-                        navController.navigate(ScreenRoutes.StatisticsScreen.route)
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.StatisticsScreen.route)
+                        }
                     })
 
                 SettingsItemCard(modifier = Modifier.weight(1f),
@@ -165,7 +179,12 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "Instructions",
                     smallText = "Read all",
                     onCardClick = {
-                        navController.navigate(ScreenRoutes.InstructionScreen.route)
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.InstructionScreen.route)
+                        }
+
                     }
                 )
 
@@ -176,7 +195,13 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     mainText = "About us",
                     smallText = "Info",
                     onCardClick = {
-                        navController.navigate(ScreenRoutes.AboutUsScreen.route)
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.AboutUsScreen.route)
+                        }
+
+
                     }
                 )
 

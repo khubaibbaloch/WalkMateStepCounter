@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
@@ -44,7 +45,11 @@ fun UserNameScreens(navController: NavController, viewModel: WalkMateViewModel) 
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -83,7 +88,12 @@ fun UserNameScreens(navController: NavController, viewModel: WalkMateViewModel) 
             Spacer(modifier = Modifier.weight(1f))
             PrivacyNoticeAndConfirmButton(onNavigateClick = {
                 if (name.isNotEmpty() && age.isNotEmpty()) {
-                    navController.navigate(ScreenRoutes.GenderScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.GenderScreen.route)
+                    }
+
                 } else {
                     Toast.makeText(context, "Please enter name and age", Toast.LENGTH_SHORT).show()
                 }

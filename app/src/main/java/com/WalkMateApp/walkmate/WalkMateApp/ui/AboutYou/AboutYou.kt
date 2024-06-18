@@ -4,27 +4,31 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
+import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.AboutYou.common.AboutYouTopBar
 
 
@@ -42,7 +46,11 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
         topBar = {
             AboutYouTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 },
                 onProfileClick = {}
             )
@@ -53,7 +61,6 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 .fillMaxSize()
                 .background(WalkMateThemes.colorScheme.background)
                 .padding(
-                    start = 12.dp, end = 12.dp,
                     bottom = 12.dp,
                     top = 24.dp
                 )
@@ -67,11 +74,118 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 contentDescription = "",
                 modifier = Modifier.size(80.dp)
             )
-            UserInfoItem(label = "Name", value = name)
-            UserInfoItem(label = "Age", value = age)
-            UserInfoItem(label = "Gender", value = gender)
-            UserInfoItem(label = "Weight", value = "$weight ${if (iskG) "KG" else "LB"}")
-            UserInfoItem(label = "Height", value = "$height ${if (isCm) "CM" else "IN"}")
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Text(
+                text = "Parvez Mayar",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Medium,
+                color = WalkMateThemes.colorScheme.textColor.copy(.8f)
+            )
+
+            Spacer(modifier = Modifier.height(18.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp)
+            ) {
+                Text(
+                    text = "Personal info",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = WalkMateThemes.colorScheme.textColor.copy(.6f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(6.dp))
+            Column(
+                modifier = Modifier
+                    .shadow(1.dp)
+                    .background(WalkMateThemes.colorScheme.onBackground)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 6.dp, bottom = 4.dp
+                        )
+                ) {
+                    UserInfoItem(label = "Name", value = "Parvez Mayar")
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 6.dp, bottom = 4.dp
+                        )
+                ) {
+                    UserInfoItem(label = "Age", value = "23")
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 4.dp, bottom = 4.dp
+                        )
+                ) {
+                    UserInfoItem(label = "Gender", value = "Float")
+                }
+            }
+
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 8.dp)
+            ) {
+                Text(
+                    text = "Body measurements",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Medium,
+                    color = WalkMateThemes.colorScheme.textColor.copy(.6f)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Column(
+                modifier = Modifier
+                    .shadow(1.dp)
+                    .background(WalkMateThemes.colorScheme.onBackground)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 6.dp, bottom = 4.dp
+                        )
+                ) {
+                    UserInfoItem(label = "Weight", value = "68 ${if (iskG) "KG" else "LB"}")
+                }
+
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = 12.dp, end = 12.dp,
+                            top = 6.dp, bottom = 4.dp
+                        )
+                ) {
+                    UserInfoItem(label = "Height", value = "155.7 ${if (isCm) "CM" else "IN"}")
+                }
+            }
         }
     }
 }
@@ -87,16 +201,16 @@ fun UserInfoItem(label: String, value: String) {
             text = label,
             color = WalkMateThemes.colorScheme.textColor,
             textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 16.sp)
+            style = TextStyle(fontSize = 14.sp)
         )
         Text(
             text = value,
-            color = WalkMateThemes.colorScheme.textColor,
+            color = WalkMateThemes.colorScheme.textColor.copy(.8f),
             textAlign = TextAlign.Center,
             style = TextStyle(fontSize = 12.sp),
             modifier = Modifier
                 .padding(start = 16.dp, bottom = 8.dp, top = 4.dp),
 
-        )
+            )
     }
 }

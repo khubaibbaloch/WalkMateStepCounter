@@ -22,6 +22,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import co.yml.charts.common.extensions.isNotNull
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
@@ -45,7 +46,11 @@ fun SetGoalScreen(navController: NavController, viewModel: WalkMateViewModel) {
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -126,7 +131,12 @@ fun SetGoalScreen(navController: NavController, viewModel: WalkMateViewModel) {
             Spacer(modifier = Modifier.weight(1f))
             PrivacyNoticeAndConfirmButton(onNavigateClick = {
                 if (!stepError.value && !waterError.value && stepGoalTextField.value.isNotEmpty() && waterGoalTextField.value.isNotEmpty()) {
-                    navController.navigate(ScreenRoutes.HomeScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.HomeScreen.route)
+                    }
+
                     viewModel.updateUserAccountCreated(true)
                 } else {
                     Toast.makeText(

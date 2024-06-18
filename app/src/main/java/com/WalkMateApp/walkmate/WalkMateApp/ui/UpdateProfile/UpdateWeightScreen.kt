@@ -15,6 +15,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
@@ -38,7 +39,11 @@ fun UpdateWeightScreen(navController: NavController, viewModel: WalkMateViewMode
         topBar = {
             ProfileTopBar(
                 onBackArrowClick = {
-                    navController.popBackStack()
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.popBackStack()
+                    }
                 }
             )
         }
@@ -79,7 +84,11 @@ fun UpdateWeightScreen(navController: NavController, viewModel: WalkMateViewMode
                 if (localWeight.value.isNotEmpty()) {
                     // Update ViewModel with the local state values
                     viewModel.updateWeight(newWeight = localWeight.value, isKgSelected = localIsKgSelected.value)
-                    navController.navigate(ScreenRoutes.HomeScreen.route)
+                    if (navController.currentBackStackEntry?.lifecycle?.currentState
+                        == Lifecycle.State.RESUMED
+                    ) {
+                        navController.navigate(ScreenRoutes.HomeScreen.route)
+                    }
                 } else {
                     Toast.makeText(context, "Please add weight", Toast.LENGTH_SHORT).show()
                 }

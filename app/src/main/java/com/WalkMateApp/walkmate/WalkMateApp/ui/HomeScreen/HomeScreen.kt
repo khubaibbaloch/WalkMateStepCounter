@@ -69,6 +69,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
@@ -168,9 +169,21 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             if (!isWalking) {
                 HomeScreenTopBar(
                     onMenuClick = {
-                        navController.navigate(ScreenRoutes.SettingsScreen.route)
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.SettingsScreen.route)
+                        }
+
                     },
-                    onProfileClick = { navController.navigate(ScreenRoutes.ProfileScreen.route) },
+                    onProfileClick = {
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.ProfileScreen.route)
+                        }
+
+                    },
                     viewModel.getGender()
                 )
             }
@@ -351,10 +364,12 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                 stepCount = stepCount,
                                 elapsedTime = elapsedTime.value,
                                 updateIsWalking = { newIsWalking -> isWalking = newIsWalking },
-                                showSensorNotSupportedDialog = { showSensorNotSupportedDialog = true },
+                                showSensorNotSupportedDialog = {
+                                    showSensorNotSupportedDialog = true
+                                },
                                 showPermissionDeniedDialog = { showPermissionDeniedDialog = true }
                             )
-                        }
+                        },
 
                     /*.clickable {
                         if (!isActivityRecognitionSupported(context)) {
@@ -387,9 +402,9 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             }
                         }
 
-                    }*/,
+                    }*/
 
-                    ) {
+                ) {
                     Icon(
                         painter = painterResource(
                             id = if (isWalking) R.drawable.pauseicon else R.drawable.playicon
@@ -641,7 +656,7 @@ fun DayChangeObserver(context: Context, viewModel: WalkMateViewModel) {
             if (currentTime.value != newMinute) {
                 currentTime.value = newMinute
                 viewModel.resetDataOnDayChange()
-            //    Toast.makeText(context,"${currentTime.value}",Toast.LENGTH_SHORT).show()
+                //    Toast.makeText(context,"${currentTime.value}",Toast.LENGTH_SHORT).show()
             }
 
             // Calculate the delay until the start of the next minute
@@ -651,6 +666,7 @@ fun DayChangeObserver(context: Context, viewModel: WalkMateViewModel) {
     }
 
 }
+
 fun handleWalkingToggle(
     context: Context,
     viewModel: WalkMateViewModel,
@@ -672,7 +688,7 @@ fun handleWalkingToggle(
             updateIsWalking(newIsWalking)
             viewModel.updatePlayPause(newIsWalking)
             if (newIsWalking) {
-              //  viewModel.startStepCounter()
+                //  viewModel.startStepCounter()
                 //viewModel.startTimer()
 
                 val intent = Intent(context, StepCountService::class.java)
