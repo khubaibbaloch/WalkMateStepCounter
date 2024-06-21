@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -78,10 +79,13 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp),
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(WalkMateThemes.colorScheme.onBackground),
                 verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Spacer(modifier = Modifier.height(24.dp))
                 // Calculate progress
                 val progress = waterIntake.value / totalWaterIntake.value.toFloat()
 
@@ -95,11 +99,12 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                 Column(
                     modifier = Modifier
                         .padding(16.dp)
-                        .clip(RoundedCornerShape(10))
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(WalkMateThemes.colorScheme.background)
                         .clickable {
                             if (!isActivityRecognitionSupported(context)) {
                                 showSensorNotSupportedDialog = true
-                            }else{
+                            } else {
                                 if (ContextCompat.checkSelfPermission(
                                         context,
                                         Manifest.permission.ACTIVITY_RECOGNITION
@@ -117,13 +122,14 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                                 }
                             }
                         },
+
                     verticalArrangement = Arrangement.Top,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
                         painter = painterResource(
                             id = when (selectedVolume.value) {
-                                100 -> R.drawable.water_bottle_in_progress
+                                100 -> R.drawable.water_bottle_100ml
                                 150 -> R.drawable.water_bottle_150ml
                                 250 -> R.drawable.water_bottle_250ml
                                 500 -> R.drawable.water_bottle_500ml
@@ -149,10 +155,21 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
                             .padding(8.dp)
                     )
                 }
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(WalkMateThemes.colorScheme.onBackground),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 WaterVolumeSelection(selectedVolume = selectedVolume.value) { volume ->
                     viewModel.updateWaterML(volume.toString())
                 }
             }
+
         }
         ShowPermissionDeniedDialog(
             showPermission = showPermissionDeniedDialog,
@@ -166,19 +183,19 @@ fun WaterIntakeScreen(navController: NavController, viewModel: WalkMateViewModel
 fun WaterVolumeSelection(selectedVolume: Int, onVolumeSelected: (Int) -> Unit) {
     Column(
         modifier = Modifier
-            .padding(top = 16.dp)
+            .padding(top = 8.dp, bottom = 8.dp)
             .fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
             WaterVolumeItem(
                 volume = 100,
-                imageResource = R.drawable.water_bottle_in_progress,
+                imageResource = R.drawable.water_bottle_100ml,
                 selectedVolume = selectedVolume
             ) {
                 onVolumeSelected(100)
@@ -218,6 +235,7 @@ fun WaterVolumeItem(
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape(10))
+            .background(if (volume == selectedVolume) WalkMateThemes.colorScheme.background else Color.Transparent)
             .clickable(onClick = onItemClick)
             .padding(8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -230,7 +248,7 @@ fun WaterVolumeItem(
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "$volume ml",
-            color = if (volume == selectedVolume) Color.White else Color.Gray,
+            color = if (volume == selectedVolume) WalkMateThemes.colorScheme.textColor else Color.Gray,
             fontSize = 12.sp
         )
     }

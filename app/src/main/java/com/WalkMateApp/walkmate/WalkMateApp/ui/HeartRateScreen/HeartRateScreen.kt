@@ -87,6 +87,8 @@ fun HeartRateScreen(navController: NavController,viewModel: WalkMateViewModel) {
                 modifier = Modifier
                     .padding(bottom = 16.dp)
                     .fillMaxWidth()
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(WalkMateThemes.colorScheme.onBackground)
                     .weight(1f),
             ) {
                 // LottieAnimation showing the heart animation
@@ -102,13 +104,12 @@ fun HeartRateScreen(navController: NavController,viewModel: WalkMateViewModel) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = 16.dp, vertical = 16.dp),
+                    .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Column(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(percent = 10))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(WalkMateThemes.colorScheme.onBackground),
                     verticalArrangement = Arrangement.Center,
                     horizontalAlignment = Alignment.CenterHorizontally
@@ -128,7 +129,7 @@ fun HeartRateScreen(navController: NavController,viewModel: WalkMateViewModel) {
                         color = Color.Gray,
                         fontSize = 12.sp,
                         textAlign = TextAlign.Center,
-                        modifier = Modifier.padding(bottom = 8.dp)
+                        modifier = Modifier.padding(bottom = 8.dp, start = 8.dp, end = 8.dp)
                     )
                 }
             }

@@ -1,36 +1,23 @@
-package com.WalkMateApp.walkmate.WalkMateApp.service
+package com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Color
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import android.icu.text.SimpleDateFormat
 import android.os.Build
-import android.os.Handler
 import android.os.IBinder
-import android.os.Looper
-import android.util.Log
-import android.widget.Toast
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.app.ActivityCompat
+import android.widget.RemoteViews
 import androidx.core.app.NotificationCompat
-import androidx.core.app.NotificationManagerCompat
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.helperClasses.SharedPreferencesHelper
 import java.util.Calendar
-import java.util.Date
 import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
@@ -268,21 +255,50 @@ class StepCountService : Service() {
     }
 
     private fun createNotification(stepCount: Int, stepGoal: Int, calories: Double): Notification {
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Step Count")
-            .setContentText("$stepCount / $stepGoal , $calories cal")
-            .setSmallIcon(R.drawable.logo)
+        // Inflate the custom layout
+        val remoteViews = RemoteViews(packageName, R.layout.custom_notification_layout)
+
+        // Update RemoteViews with actual data
+        remoteViews.setTextViewText(R.id.stepCountTextView, stepCount.toString())
+        remoteViews.setTextViewText(R.id.caloriesTextView, calories.toString())
+        val progress = (stepCount.toDouble() / stepGoal.toDouble() * 100).toInt()
+        remoteViews.setProgressBar(R.id.progress_horizontal, 100, progress, false)
+
+        // Build the notification using NotificationCompat
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.footsteps) // Set the small icon
+            .setContent(remoteViews) // Set custom layout using RemoteViews
             .setSound(null) // Remove sound
-            .setPriority(NotificationCompat.PRIORITY_LOW)
+            .setPriority(NotificationCompat.PRIORITY_LOW) // Set notification priority
             .build()
+
+        return notification
     }
 
     private fun updateNotification(stepCount: Int, stepGoal: Int, calories: Double) {
-        val notification = createNotification(stepCount, stepGoal, calories)
-        val notificationManager =
-            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        // Inflate the custom layout
+        val remoteViews = RemoteViews(packageName, R.layout.custom_notification_layout)
+
+        // Update RemoteViews with actual data
+        remoteViews.setTextViewText(R.id.stepCountTextView, stepCount.toString())
+        remoteViews.setTextViewText(R.id.caloriesTextView, calories.toString())
+        val progress = (stepCount.toDouble() / stepGoal.toDouble() * 100).toInt()
+        remoteViews.setProgressBar(R.id.progress_horizontal, 100, progress, false)
+
+
+        // Build the notification using NotificationCompat
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.footsteps) // Set the small icon
+            .setContent(remoteViews) // Set custom layout using RemoteViews
+            .setSound(null) // Remove sound
+            .setPriority(NotificationCompat.PRIORITY_LOW) // Set notification priority
+            .build()
+
+        // Get the NotificationManager and update the notification
+        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
+
 
     private fun startStepCounter() {
         sensorManager.registerListener(
@@ -316,6 +332,7 @@ class StepCountService : Service() {
         val saveLastDay = sharedPreferencesHelper.getData("lastDaySaved", "0")
         if (currentDayOfWeek != saveLastDay) {
             stepCount = 0
+            calories = 0.0
             sharedPreferencesHelper.saveData("lastDaySaved", currentDayOfWeek!!)
             updateNotification(stepCount, stepGoal, calories)
         } else {

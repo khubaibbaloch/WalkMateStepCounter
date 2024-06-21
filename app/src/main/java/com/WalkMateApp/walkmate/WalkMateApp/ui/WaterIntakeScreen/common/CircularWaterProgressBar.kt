@@ -33,6 +33,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import kotlin.math.sin
 
@@ -61,16 +62,16 @@ fun CircularWaterProgressBar(progress: Float, intake: Float, total: Float) {
 
     Box(
         contentAlignment = Alignment.Center,
-        modifier = Modifier.size(200.dp)
+        modifier = Modifier.size(180.dp)
     ) {
-        Canvas(modifier = Modifier.size(200.dp)) {
-            val strokeWidth = 20f
+        Canvas(modifier = Modifier.size(180.dp)) {
+            val strokeWidth = 18f
             val radius = size.minDimension / 2
             val circleRadius = radius - strokeWidth / 2
 
             // Draw the border
             drawArc(
-                color = Color.Gray,
+                color = Color.Gray.copy(0.5f),
                 startAngle = 0f,
                 sweepAngle = 360f,
                 useCenter = false,

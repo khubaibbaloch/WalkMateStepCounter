@@ -2,14 +2,10 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
-import android.util.Log
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -75,7 +71,7 @@ import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
-import com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService
+import com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService.StepCountService
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.CustomCircularProgress
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DropdownRowWithBarChart
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.GreetingRow
@@ -95,7 +91,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import java.util.Calendar
-import java.util.Locale
 
 
 @SuppressLint("DefaultLocale")
@@ -228,7 +223,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                 CustomCircularProgress(
                                     canvasSize = 220.dp,
                                     indicatorValue = stepCount,
-                                    foregroundIndicatorStrokeWidth = 26f,
                                     maxIndicatorValue = stepGoal,
                                     isWalking = isWalking
                                 )
@@ -426,7 +420,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         color = WalkMateThemes.colorScheme.onBackground,
                         shape = RoundedCornerShape(8.dp)
                     )
-
                     .padding(vertical = 12.dp, horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -559,8 +552,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
         if (stepCount == stepGoal && isWalking) {
             StepGoalReachedAnimation(composition = compositionHeart!!, timeoutMillis = 6000L)
         }
-
-
         ShowPermissionDeniedDialog(
             showPermission = showPermissionDeniedDialog,
             onDismiss = { showPermissionDeniedDialog = false },

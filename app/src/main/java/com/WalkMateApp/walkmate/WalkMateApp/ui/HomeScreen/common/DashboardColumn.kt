@@ -109,8 +109,9 @@ fun CustomCircularProgress(
     canvasSize: Dp = 300.dp,
     indicatorValue: Int = 100,
     maxIndicatorValue: Int = 100,
-    backgroundIndicatorColor: Color = WalkMateThemes.colorScheme.onBackground,
-    backgroundIndicatorWidth: Float = 30f,
+    backgroundIndicatorColor: Color = Color.Gray.copy(0.5f),
+    backgroundIndicatorWidth: Float = 20f,
+    foregroundIndicatorStrokeWidth: Float = 20f,
     foregroundIndicatorColor: Brush = Brush.sweepGradient(
         colors = listOf(
             ProgressColor3,
@@ -118,7 +119,6 @@ fun CustomCircularProgress(
             ProgressColor1
         )
     ),
-    foregroundIndicatorStrokeWidth: Float = 25f,
     isWalking: Boolean = false
 ) {
     var allowedIndicatorValue by remember {
@@ -196,7 +196,7 @@ fun DrawScope.foregroundIndicator(
     componentSize: Size,
     indicatorColor: Brush,
     indicatorStrokeWidth: Float,
-    capWidth: Float = 25f
+    capWidth: Float = 0f
 ) {
     val center = Offset(size.width / 2f, size.height / 2f)
 
