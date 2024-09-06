@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
@@ -124,7 +125,7 @@ fun UserInfoInputField(
             .fillMaxWidth()
             .padding(top = 16.dp, start = 16.dp, end = 16.dp, bottom = 0.dp),
         textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = WalkMateThemes.colorScheme.textColor,
             unfocusedBorderColor = WalkMateThemes.colorScheme.textColor,
             cursorColor = WalkMateThemes.colorScheme.textColor

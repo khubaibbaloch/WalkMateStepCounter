@@ -20,12 +20,12 @@ import com.WalkMateApp.walkmate.R
 class ReminderBroadcastReceiver : BroadcastReceiver() {
     @RequiresApi(Build.VERSION_CODES.S)
     override fun onReceive(context: Context, intent: Intent) {
-        if (intent.action == Intent.ACTION_BOOT_COMPLETED){
-
-        }else{
+        if (intent.action == Intent.ACTION_BOOT_COMPLETED) {
+            // Handle boot completed action if necessary
+        } else {
             Log.d("ReminderBroadcastReceiver", "Received broadcast: ${intent.action}")
 
-            val notificationId = 1
+            val notificationId = 1 // Ensure this ID is unique from other notifications
             val channelId = "reminder_channel"
 
             // Create an explicit intent for an Activity in your app
@@ -37,19 +37,19 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
             }
 
             val builder = NotificationCompat.Builder(context, channelId)
-                .setSmallIcon(R.drawable.footsteps)
+                .setSmallIcon(R.drawable.logo)
                 .setContentTitle("WalkMate Reminder")
                 .setContentText("It's time for your reminder!")
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setContentIntent(resultPendingIntent)
-                .setForegroundServiceBehavior(FOREGROUND_SERVICE_IMMEDIATE)
+                .setForegroundServiceBehavior(NotificationCompat.FOREGROUND_SERVICE_IMMEDIATE)
                 .setAutoCancel(true)
 
             // Create or update the notification channel
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 val name = "Reminder Channel"
                 val descriptionText = "Channel for WalkMate reminders"
-                val importance = NotificationManager.IMPORTANCE_DEFAULT // or
+                val importance = NotificationManager.IMPORTANCE_HIGH
                 val channel = NotificationChannel(channelId, name, importance).apply {
                     description = descriptionText
                 }
@@ -64,6 +64,5 @@ class ReminderBroadcastReceiver : BroadcastReceiver() {
                 notify(notificationId, builder.build())
             }
         }
-
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Scaffold
@@ -321,7 +322,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             )
                         },
                         textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                        colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor,
                             unfocusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor
                         ),
@@ -429,7 +430,7 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         )
                     },
                     textStyle = TextStyle(color = WalkMateThemes.colorScheme.textColor),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                    colors = OutlinedTextFieldDefaults.colors(
                         focusedBorderColor = if (isError.value) Color.Red else WalkMateThemes.colorScheme.textColor,
                         unfocusedBorderColor = if (isError.value) Color.Red else Color.Gray
                     ),

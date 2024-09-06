@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -93,7 +94,7 @@ fun scrollAnimatedText(
                     contentAlignment = Alignment.Center
                 ) {
                     val formattedText = "%02d".format(item)
-                    Text(text = formattedText, fontSize = fontSize)
+                    Text(text = formattedText, fontSize = fontSize, color = WalkMateThemes.colorScheme.textColor)
                 }
             }
         }
