@@ -75,7 +75,7 @@ fun SettingsTopBar(
                 contentDescription = "",
                 modifier = Modifier
                     .padding(end = 8.dp)
-                    .size(48.dp)
+                    .size(40.dp)
                     .clickable { onProfileClick() }
 
             )

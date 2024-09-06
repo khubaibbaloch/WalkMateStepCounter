@@ -2,8 +2,6 @@ package com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.app.AlarmManager
-import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -75,7 +73,7 @@ import com.SoundScapeApp.soundscape.ui.theme.WalkMateThemes
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
-import com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService
+import com.WalkMateApp.walkmate.WalkMateApp.service.StepCountService.StepCountService
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.CustomCircularProgress
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.DropdownRowWithBarChart
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HomeScreen.common.GreetingRow
@@ -95,7 +93,6 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
 import kotlinx.coroutines.delay
 import java.util.Calendar
-import java.util.Locale
 
 
 @SuppressLint("DefaultLocale")
@@ -115,6 +112,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
     val heartRate = viewModel.heartRate.collectAsState()
     val WaterGoal = viewModel.waterGoal.collectAsState()
     val WaterIntake = viewModel.waterIntake.collectAsState()
+    val isDayChanged = remember {mutableStateOf(false)}
 
     val compositionHeart by rememberLottieComposition(spec = LottieCompositionSpec.RawRes(resId = R.raw.cong))
 
@@ -153,6 +151,7 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 ) {
                     permissionsToRequest.add(Manifest.permission.POST_NOTIFICATIONS)
                 }
+
             }
             if (permissionsToRequest.isNotEmpty()) {
                 requestPermissionLauncher.launch(permissionsToRequest.toTypedArray())
@@ -228,7 +227,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                 CustomCircularProgress(
                                     canvasSize = 220.dp,
                                     indicatorValue = stepCount,
-                                    foregroundIndicatorStrokeWidth = 26f,
                                     maxIndicatorValue = stepGoal,
                                     isWalking = isWalking
                                 )
@@ -426,7 +424,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
                         color = WalkMateThemes.colorScheme.onBackground,
                         shape = RoundedCornerShape(8.dp)
                     )
-
                     .padding(vertical = 12.dp, horizontal = 6.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -544,7 +541,11 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             AnimatedVisibility(
                 visible = !isWalking,
             ) {
-                DropdownRowWithBarChart(viewModel)
+                if (isDayChanged.value){
+                    DropdownRowWithBarChart(viewModel)
+                }else{
+                    DropdownRowWithBarChart(viewModel)
+                }
             }
         }
 
@@ -559,16 +560,20 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
         if (stepCount == stepGoal && isWalking) {
             StepGoalReachedAnimation(composition = compositionHeart!!, timeoutMillis = 6000L)
         }
-
-
         ShowPermissionDeniedDialog(
             showPermission = showPermissionDeniedDialog,
             onDismiss = { showPermissionDeniedDialog = false },
             context = context
         )
         showSensorNotSupported(showSensorNotSupportedDialog, context)
-        DayChangeObserver(context = context, viewModel = viewModel)
+        DayChangeObserver(viewModel = viewModel, updateIsDayChanged = { dayChange ->
+            if (dayChange){
+                isDayChanged.value = true
+            }else{
+                isDayChanged.value = false
+            }
 
+        })
     }
 }
 
@@ -645,18 +650,18 @@ fun StepGoalReachedAnimation(composition: LottieComposition, timeoutMillis: Long
 }
 
 @Composable
-fun DayChangeObserver(context: Context, viewModel: WalkMateViewModel) {
+fun DayChangeObserver(viewModel: WalkMateViewModel, updateIsDayChanged: (Boolean) -> Unit,) {
     val currentTime = remember { mutableStateOf(Calendar.getInstance().get(Calendar.MINUTE)) }
-
+   // updateIsDayChanged(false)
     LaunchedEffect(Unit) {
         while (true) {
             val now = Calendar.getInstance()
             val newMinute = now.get(Calendar.MINUTE)
-
             if (currentTime.value != newMinute) {
                 currentTime.value = newMinute
                 viewModel.resetDataOnDayChange()
-                //    Toast.makeText(context,"${currentTime.value}",Toast.LENGTH_SHORT).show()
+                updateIsDayChanged(true)
+                //Toast.makeText(context,"${currentTime.value}",Toast.LENGTH_SHORT).show()
             }
 
             // Calculate the delay until the start of the next minute

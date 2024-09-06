@@ -11,11 +11,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -68,24 +70,19 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Image(
                 painter = painterResource(id = if (gender == "Female") R.drawable.female else R.drawable.man),
                 contentDescription = "",
                 modifier = Modifier.size(80.dp)
             )
-
             Spacer(modifier = Modifier.height(12.dp))
-
             Text(
-                text = "Parvez Mayar",
+                text = "$name",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Medium,
                 color = WalkMateThemes.colorScheme.textColor.copy(.8f)
             )
-
             Spacer(modifier = Modifier.height(18.dp))
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -93,17 +90,19 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
             ) {
                 Text(
                     text = "Personal info",
-                    fontSize = 12.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = WalkMateThemes.colorScheme.textColor.copy(.6f)
+                    color = WalkMateThemes.colorScheme.textColor.copy(.8f)
                 )
             }
-
             Spacer(modifier = Modifier.height(6.dp))
             Column(
                 modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
                     .shadow(1.dp)
                     .background(WalkMateThemes.colorScheme.onBackground)
+
             ) {
                 Row(
                     modifier = Modifier
@@ -113,7 +112,7 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             top = 6.dp, bottom = 4.dp
                         )
                 ) {
-                    UserInfoItem(label = "Name", value = "Parvez Mayar")
+                    UserInfoItem(label = "Name", value = "$name")
                 }
 
                 Row(
@@ -124,7 +123,7 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             top = 6.dp, bottom = 4.dp
                         )
                 ) {
-                    UserInfoItem(label = "Age", value = "23")
+                    UserInfoItem(label = "Age", value = "$age")
                 }
 
                 Row(
@@ -135,14 +134,10 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             top = 4.dp, bottom = 4.dp
                         )
                 ) {
-                    UserInfoItem(label = "Gender", value = "Float")
+                    UserInfoItem(label = "Gender", value = "$gender")
                 }
             }
-
-
             Spacer(modifier = Modifier.height(24.dp))
-
-
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -150,9 +145,9 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
             ) {
                 Text(
                     text = "Body measurements",
-                    fontSize = 12.sp,
+                    fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
-                    color = WalkMateThemes.colorScheme.textColor.copy(.6f)
+                    color = WalkMateThemes.colorScheme.textColor.copy(.8f)
                 )
             }
 
@@ -160,8 +155,11 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
             Column(
                 modifier = Modifier
+                    .padding(start = 16.dp, end = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
                     .shadow(1.dp)
                     .background(WalkMateThemes.colorScheme.onBackground)
+
             ) {
                 Row(
                     modifier = Modifier
@@ -171,7 +169,7 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             top = 6.dp, bottom = 4.dp
                         )
                 ) {
-                    UserInfoItem(label = "Weight", value = "68 ${if (iskG) "KG" else "LB"}")
+                    UserInfoItem(label = "Weight", value = "$weight ${if (iskG) "KG" else "LB"}")
                 }
 
 
@@ -183,7 +181,7 @@ fun AboutYouScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             top = 6.dp, bottom = 4.dp
                         )
                 ) {
-                    UserInfoItem(label = "Height", value = "155.7 ${if (isCm) "CM" else "IN"}")
+                    UserInfoItem(label = "Height", value = "$height ${if (isCm) "CM" else "IN"}")
                 }
             }
         }
@@ -201,13 +199,13 @@ fun UserInfoItem(label: String, value: String) {
             text = label,
             color = WalkMateThemes.colorScheme.textColor,
             textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 14.sp)
+            style = TextStyle(fontSize = 16.sp)
         )
         Text(
             text = value,
             color = WalkMateThemes.colorScheme.textColor.copy(.8f),
             textAlign = TextAlign.Center,
-            style = TextStyle(fontSize = 12.sp),
+            style = TextStyle(fontSize = 14.sp),
             modifier = Modifier
                 .padding(start = 16.dp, bottom = 8.dp, top = 4.dp),
 

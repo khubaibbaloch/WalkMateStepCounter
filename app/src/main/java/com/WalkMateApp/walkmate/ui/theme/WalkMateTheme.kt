@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.ripple
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
@@ -16,6 +17,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
@@ -166,7 +168,7 @@ fun WalkMateThemes(
         2 ->  LightMode
         else -> throw IllegalArgumentException("Invalid theme choice: $themeChoice")
     }
-    val rippleIndication = rememberRipple()
+    val rippleIndication =  ripple()
 
     val typography = when (windows.widthSizeClass) {
         WindowWidthSizeClass.Compact -> {

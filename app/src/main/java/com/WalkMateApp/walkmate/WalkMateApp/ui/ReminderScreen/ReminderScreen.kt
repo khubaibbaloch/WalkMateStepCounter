@@ -21,6 +21,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
@@ -52,6 +53,7 @@ import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.ScreenRoutes
 import com.WalkMateApp.walkmate.WalkMateApp.ui.HeartRateScreen.common.HeartRateTopBar
 import com.WalkMateApp.walkmate.WalkMateApp.ui.ReminderScreen.common.ReminderTopBar
+import com.WalkMateApp.walkmate.WalkMateApp.ui.ReminderScreen.common.scrollAnimatedText
 
 @Composable
 fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
@@ -69,7 +71,8 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
     val isReminderEnabled = remember { mutableStateOf(ReminderEnabled.value) }
     val selectedDays = remember { mutableStateOf(setOf("Monday")) }
     val isDayDialogVisible = remember { mutableStateOf(false) }
-    val daysOfWeek = listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+    val daysOfWeek =
+        listOf("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
 
     // Fetch selected days from SharedPreferences on screen load
     LaunchedEffect(Unit) {
@@ -114,6 +117,7 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     .padding(8.dp)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable { isTimeClicked.value = true }
+                    .background(WalkMateThemes.colorScheme.onBackground)
                     .padding(8.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
@@ -150,17 +154,17 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             // viewModel.cancelReminder(context)
                         }
                     },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = WalkMateThemes.colorScheme.primary,
-                        uncheckedThumbColor = Color.Gray
-                    )
                 )
             }
 
             Column(
                 modifier = Modifier
-                    .padding(16.dp)
                     .fillMaxWidth()
+                    .padding(8.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable { isDayDialogVisible.value = true }
+                    .background(WalkMateThemes.colorScheme.onBackground)
+                    .padding(8.dp),
             ) {
                 Text(
                     text = "Repeat Day",
@@ -171,17 +175,16 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     ),
                     modifier = Modifier.padding(bottom = 8.dp)
                 )
-
                 Text(
-                    text = selectedDays.value.joinToString(", "),
+                    text = selectedDays.value.map { it.take(3) }.joinToString(", "),
                     style = TextStyle(
                         fontSize = 16.sp,
                         color = WalkMateThemes.colorScheme.textColor
                     ),
                     modifier = Modifier
-                        .clickable { isDayDialogVisible.value = true }
                         .padding(bottom = 8.dp)
                 )
+
             }
 
         }
@@ -189,6 +192,7 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
     if (isTimeClicked.value) {
         AlertDialog(
+            containerColor = WalkMateThemes.colorScheme.onBackground,
             onDismissRequest = {
                 isTimeClicked.value = false
             },
@@ -221,11 +225,11 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
             title = {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.water_intake),
+                        painter = painterResource(id = R.drawable.notification),
                         contentDescription = null,
                         modifier = Modifier
                             .size(35.dp)
@@ -247,38 +251,42 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 16.dp),
                         horizontalArrangement = Arrangement.Center,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        OutlinedTextField(
-                            value = selectedHour.value,
-                            onValueChange = { newValue ->
-                                selectedHour.value = newValue
-                                validateTime(
-                                    selectedHour.value,
-                                    selectedMinute.value,
-                                    selectedAmPm.value,
-                                    isError
-                                )
-                            },
-                            label = { Text("Hour") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.width(70.dp),
-                            isError = isError.value,
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 18.sp)
-                        )
+
+                        scrollAnimatedText(listStart = 1, listEnd = 12) { centerIndex ->
+                            val formattedHour =
+                                "%02d".format(centerIndex) // Format the hour with leading zeros
+                            selectedHour.value = formattedHour
+                        }
+
+
+
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
                             text = ":",
-                            style = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                            style = TextStyle(
+                                fontSize = 24.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = WalkMateThemes.colorScheme.textColor,
+                            ),
+                            modifier = Modifier.padding(bottom = 24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
+                        scrollAnimatedText(listStart = 0, listEnd = 59) { centerIndex ->
+                            val formattedMinute = "%02d".format(centerIndex)
+                            selectedMinute.value = formattedMinute
+                        }
+
+                        /*OutlinedTextField(
                             value = selectedMinute.value,
                             onValueChange = { newValue ->
-                                selectedMinute.value = newValue
+                                val filteredValue = twoDigitFilter(newValue)
+                                selectedMinute.value = filteredValue
                                 validateTime(
                                     selectedHour.value,
                                     selectedMinute.value,
@@ -286,32 +294,59 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                                     isError
                                 )
                             },
-                            label = { Text("Minute") },
+                            label = { Text("Minute", style = TextStyle(color = WalkMateThemes.colorScheme.textColor)) },
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                            modifier = Modifier.width(70.dp),
-                            isError = isError.value,
-                            singleLine = true,
-                            textStyle = TextStyle(fontSize = 18.sp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        OutlinedTextField(
-                            value = selectedAmPm.value,
-                            onValueChange = { newValue ->
-                                selectedAmPm.value = newValue
-                                validateTime(
-                                    selectedHour.value,
-                                    selectedMinute.value,
-                                    selectedAmPm.value,
-                                    isError
-                                )
-                            },
-                            label = { Text("AM/PM") },
-                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
                             modifier = Modifier.width(80.dp),
                             isError = isError.value,
                             singleLine = true,
-                            textStyle = TextStyle(fontSize = 18.sp)
-                        )
+                            textStyle = TextStyle(fontSize = 18.sp, color = WalkMateThemes.colorScheme.textColor)
+                        )*/
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    // AM/PM Selection using RadioButtons
+                    Column(
+                        modifier = Modifier.padding(start = 16.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = selectedAmPm.value == "AM",
+                                onClick = {
+                                    selectedAmPm.value = "AM"
+                                    validateTime(
+                                        selectedHour.value,
+                                        selectedMinute.value,
+                                        selectedAmPm.value,
+                                        isError
+                                    )
+                                }
+                            )
+                            Text(
+                                "AM",
+                                style = TextStyle(color = WalkMateThemes.colorScheme.textColor)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            RadioButton(
+                                selected = selectedAmPm.value == "PM",
+                                onClick = {
+                                    selectedAmPm.value = "PM"
+                                    validateTime(
+                                        selectedHour.value,
+                                        selectedMinute.value,
+                                        selectedAmPm.value,
+                                        isError
+                                    )
+                                }
+                            )
+                            Text(
+                                "PM",
+                                style = TextStyle(color = WalkMateThemes.colorScheme.textColor)
+                            )
+                        }
+
                     }
                     if (isError.value) {
                         Spacer(modifier = Modifier.height(8.dp))
@@ -332,25 +367,37 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
         val tempSelectedDays = remember { mutableStateListOf(*selectedDays.value.toTypedArray()) }
 
         AlertDialog(
+            containerColor = WalkMateThemes.colorScheme.onBackground,
             onDismissRequest = { isDayDialogVisible.value = false },
-            title = { Text(text = "Select Days") },
+            title = { Text(text = "Select Days", color = WalkMateThemes.colorScheme.textColor) },
             text = {
                 Column {
                     daysOfWeek.forEach { day ->
+                        val isChecked = tempSelectedDays.contains(day)
                         Row(
+                            modifier = Modifier
+
+                                .clickable {
+                                    if (isChecked) {
+                                        tempSelectedDays.remove(day)
+                                    } else {
+                                        tempSelectedDays.add(day)
+                                    }
+                                }
+                                .clip(RoundedCornerShape(2.dp))
+                                .padding(8.dp),
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Checkbox(
-                                checked = tempSelectedDays.contains(day),
-                                onCheckedChange = { isChecked ->
-                                    if (isChecked) {
-                                        tempSelectedDays.add(day)
-                                    } else {
-                                        tempSelectedDays.remove(day)
-                                    }
-                                }
+                                checked = isChecked,
+                                onCheckedChange = null // Remove the onCheckedChange to handle the click in Row
                             )
-                            Text(text = day)
+                            Text(
+                                text = day,
+                                color = WalkMateThemes.colorScheme.textColor,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 8.dp)
+                            )
                         }
                     }
                 }
@@ -369,21 +416,15 @@ fun ReminderScreen(navController: NavController, viewModel: WalkMateViewModel) {
                             // For example:
                             // errorMessage.value = "Please select at least one day."
                         }
-                    }
+                    },
+                    colors = ButtonDefaults.buttonColors(Color.LightGray),
                 ) {
-                    Text("OK")
+                    Text(text = "Save", color = Color.Black)
                 }
+
             }
         )
     }
-
-
-
-
-
-
-
-
 
     if (isReminderEnabled.value) {
         viewModel.setReminder(context)
@@ -399,4 +440,12 @@ fun validateTime(hour: String, minute: String, amPm: String, isError: MutableSta
     val isValidMinute = minuteInt != null && minuteInt in 0..59
     val isValidAmPm = amPm.equals("AM", ignoreCase = true) || amPm.equals("PM", ignoreCase = true)
     isError.value = !(isValidHour && isValidMinute && isValidAmPm)
+}
+
+fun twoDigitFilter(text: String): String {
+    return if (text.length > 2) {
+        text.take(2)
+    } else {
+        text
+    }
 }

@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
-    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM"/>
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM"/>
 
 
 
@@ -22,13 +22,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.WalkMate"
+        android:theme="@style/Theme.MySplashScreen"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.WalkMate">
+            android:theme="@style/Theme.MySplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -36,13 +36,19 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".WalkMateApp.service.StepCountService"
+            android:name=".WalkMateApp.service.StepCountService.StepCountService"
             android:enabled="true"
             android:foregroundServiceType="dataSync"
             android:exported="false"
             tools:ignore="ForegroundServicePermission" />
 
-        <receiver android:name=".WalkMateApp.service.ReminderBroadcastReceiver"
+        <service android:name=".WalkMateApp.service.StepGoalCompleted.CongratulatoryNotificationService"
+            android:enabled="true"
+            android:foregroundServiceType="dataSync"
+            android:exported="false"
+            tools:ignore="ForegroundServicePermission" />
+
+        <receiver android:name=".WalkMateApp.service.Reminder.ReminderBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -50,7 +56,14 @@
                 <action android:name="com.WalkMateApp.REMINDER_NOTIFICATION"/>
             </intent-filter>
         </receiver>
-
+        <receiver android:name=".WalkMateApp.service.Reminder.BootReceiver"
+            android:enabled="true"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.TIME_CHANGED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

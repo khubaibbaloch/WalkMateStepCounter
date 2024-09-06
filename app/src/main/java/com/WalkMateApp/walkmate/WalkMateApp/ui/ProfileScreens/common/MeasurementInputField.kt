@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -34,7 +35,7 @@ fun MeasurementInputField(value: String, onValueChange: (String) -> Unit, label:
         keyboardOptions = KeyboardOptions.Default.copy(
             keyboardType = KeyboardType.Number
         ),
-        colors = TextFieldDefaults.outlinedTextFieldColors(
+        colors = OutlinedTextFieldDefaults.colors(
             focusedBorderColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor,
             unfocusedBorderColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor,
             cursorColor = if (isError) Color.Red else WalkMateThemes.colorScheme.textColor
