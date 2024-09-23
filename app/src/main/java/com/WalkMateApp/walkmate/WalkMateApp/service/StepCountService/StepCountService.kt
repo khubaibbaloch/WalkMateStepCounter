@@ -7,13 +7,16 @@ import android.app.NotificationManager
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
+import android.media.RingtoneManager
 import android.os.Build
 import android.os.IBinder
 import android.widget.RemoteViews
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.WalkMateApp.walkmate.R
 import com.WalkMateApp.walkmate.WalkMateApp.helperClasses.SharedPreferencesHelper
@@ -23,7 +26,7 @@ import java.util.Locale
 import java.util.Timer
 import java.util.TimerTask
 
-class StepCountService : Service() {
+/*class StepCountService : Service() {
     private val NOTIFICATION_ID = 2 // Ensure this ID is unique from other notifications
     private val CHANNEL_ID = "StepCountChannel"
     private val CHANNEL_NAME = "Step Count Notification Channel"
@@ -221,11 +224,10 @@ class StepCountService : Service() {
     override fun onBind(intent: Intent): IBinder? {
         return null
     }
-}
+}*/
 
-
-/*class StepCountService : Service() {
-    private val NOTIFICATION_ID = 2
+class StepCountService : Service() {
+    private val NOTIFICATION_ID = 1001 // Ensure this ID is unique from other notifications
     private val CHANNEL_ID = "StepCountChannel"
     private val CHANNEL_NAME = "Step Count Notification Channel"
 
@@ -279,24 +281,11 @@ class StepCountService : Service() {
 
     @SuppressLint("ForegroundServiceType")
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Handle incoming data from intent
         intent?.extras?.let {
             stepCount = it.getInt("stepCount", 0)
             elapsedTime = it.getLong("elapsedTime", 0L)
             calories = calculateCaloriesBurned(stepCount)
         }
-
-        // For Android 13+ check notification permission
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.POST_NOTIFICATIONS)
-                != PackageManager.PERMISSION_GRANTED) {
-                // TODO: Request notification permission before continuing
-                stopSelf() // Stop service if permission isn't granted
-                return START_NOT_STICKY
-            }
-        }
-
-        // Start foreground service with notification
         startForeground(NOTIFICATION_ID, createNotification(stepCount, stepGoal, calories))
         startTime = System.currentTimeMillis()
 
@@ -307,44 +296,72 @@ class StepCountService : Service() {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+            // Delete existing channel if it exists
+            notificationManager.deleteNotificationChannel(CHANNEL_ID)
+
+            // Create a new notification channel with high importance
             val channel = NotificationChannel(
                 CHANNEL_ID,
                 CHANNEL_NAME,
-                NotificationManager.IMPORTANCE_LOW
+                NotificationManager.IMPORTANCE_HIGH
             ).apply {
                 description = "Channel for step count notification"
+                enableLights(true)
+                enableVibration(true)  // Enable vibration if you want sound+vibration
             }
-            val notificationManager =
-                getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
             notificationManager.createNotificationChannel(channel)
         }
     }
 
+
     private fun createNotification(stepCount: Int, stepGoal: Int, calories: Double): Notification {
-        // Inflate the custom layout
-        val remoteViews = RemoteViews(packageName, R.layout.custom_notification_layout)
-
-        // Update RemoteViews with actual data
-        remoteViews.setTextViewText(R.id.stepCountTextView, stepCount.toString())
-        remoteViews.setTextViewText(R.id.caloriesTextView, calories.toString())
         val progress = (stepCount.toDouble() / stepGoal.toDouble() * 100).toInt()
-        remoteViews.setProgressBar(R.id.progress_horizontal, 100, progress, false)
 
-        // Build the notification using NotificationCompat
+        // Build the notification with an icon, text details, and a progress bar
         return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setSmallIcon(R.drawable.logo) // Set the small icon
-            .setContent(remoteViews) // Set custom layout using RemoteViews
-            .setSound(null) // Remove sound
-            .setPriority(NotificationCompat.PRIORITY_LOW) // Set notification priority
+            .setSmallIcon(R.drawable.logo) // Small icon for the notification
+            .setContentTitle("Step Count Progress") // Title of the notification
+            .setContentText("Steps: $stepCount / $stepGoal | Calories: $calories") // Main content text
+            .setStyle(NotificationCompat.BigTextStyle().bigText("Steps: $stepCount / $stepGoal | Calories: $calories"))
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setSound(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)) // Sound for the notification
+            .setDefaults(NotificationCompat.DEFAULT_ALL) // Ensures sound, vibration, and lights are enabled
+            .setAutoCancel(false) // Keeps the notification persistent
+            .setProgress(100, progress, false) // Progress bar for step goal
             .build()
     }
 
+
+
+
+
     private fun updateNotification(stepCount: Int, stepGoal: Int, calories: Double) {
+        val progress = (stepCount.toDouble() / stepGoal.toDouble() * 100).toInt()
+
+        // Build the updated notification with icon, text details, and a progress bar
+        val notification = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setSmallIcon(R.drawable.logo) // Set the small icon for the notification
+            .setContentTitle("Step Count Progress") // Set title for the notification
+            .setContentText("Steps: $stepCount / $stepGoal | Calories: $calories") // Set content text
+            .setStyle(NotificationCompat.BigTextStyle().bigText("Steps: $stepCount / $stepGoal | Calories: $calories"))
+            .setCategory(NotificationCompat.CATEGORY_SERVICE)
+            .setPriority(NotificationCompat.PRIORITY_HIGH) // High priority to alert user
+            .setDefaults(NotificationCompat.DEFAULT_ALL) // Ensures notification plays sound, vibrates, and shows lights
+            .setAutoCancel(false) // Keeps the notification persistent
+            .setProgress(100, progress, false) // Update the progress bar for step goal
+            .build()
+
         // Update the notification
-        val notification = createNotification(stepCount, stepGoal, calories)
         val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notification)
     }
+
+
+
 
     private fun startStepCounter() {
         sensorManager.registerListener(
@@ -418,4 +435,3 @@ class StepCountService : Service() {
         return null
     }
 }
-*/

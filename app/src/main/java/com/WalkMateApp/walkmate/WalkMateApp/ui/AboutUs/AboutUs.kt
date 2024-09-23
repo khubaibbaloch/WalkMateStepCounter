@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -48,7 +49,18 @@ fun AboutUsScreen(
                 colors = TopAppBarDefaults.topAppBarColors(
                     containerColor = Color.Transparent
                 ),
-                title = { Text(text = "About Us", color = WalkMateThemes.colorScheme.textColor) },
+                title = {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(1f).padding(end = 34.dp),
+                        horizontalArrangement = Arrangement.Center,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "AboutUs",
+                            color = WalkMateThemes.colorScheme.textColor
+                        )
+                    }
+                },
                 navigationIcon = {
                     IconButton(onClick = {
                         if (navController.currentBackStackEntry?.lifecycle?.currentState

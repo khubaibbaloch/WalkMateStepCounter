@@ -1,5 +1,7 @@
 package com.WalkMateApp.walkmate.WalkMateApp.navGraph
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -10,6 +12,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.DoNotDisturbBin.DoNotDisturbBinApp.ui.PrivacyPolicyScreen.PrivacyPolicyScreen
 import com.SoundScapeApp.soundscape.SoundScapeApp.ui.SettingsScreen.AboutUs.AboutUsScreen
 import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModel
 import com.WalkMateApp.walkmate.WalkMateApp.ui.AboutYou.AboutYouScreen
@@ -30,8 +33,10 @@ import com.WalkMateApp.walkmate.WalkMateApp.ui.UpdateProfile.UpdateHeightScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.UpdateProfile.UpdateUserNameScreens
 import com.WalkMateApp.walkmate.WalkMateApp.ui.UpdateProfile.UpdateWeightScreen
 import com.WalkMateApp.walkmate.WalkMateApp.ui.WaterIntakeScreen.WaterIntakeScreen
+import com.powervpn.PowerVPNApp.PowerVPN.ui.settings.AppUpdate.AppUpdateScreen
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
 fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel) {
     val isUserAccountCreated = viewModel.isUserAccountCreated.collectAsState()
@@ -108,6 +113,12 @@ fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel)
         }
         composable(ScreenRoutes.ReminderScreen.route) {
             ReminderScreen(navController = navController,viewModel=viewModel)
+        }
+        composable(ScreenRoutes.PrivacyPolicyScreen.route) {
+            PrivacyPolicyScreen(navController = navController)
+        }
+        composable(ScreenRoutes.AppUpdateScreen.route) {
+            AppUpdateScreen(navController = navController)
         }
     }
 }
