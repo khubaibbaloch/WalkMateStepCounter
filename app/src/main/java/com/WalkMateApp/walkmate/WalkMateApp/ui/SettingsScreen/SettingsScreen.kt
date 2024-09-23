@@ -191,6 +191,48 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
 
                 SettingsItemCard(
                     modifier = Modifier.weight(1f),
+                    icon = R.drawable.privacypolice,
+                    iconSize = 20.dp,
+                    mainText = "Privacy Policy",
+                    smallText = "Details on data usage and security",
+                    onCardClick = {
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.PrivacyPolicyScreen.route)
+                        }
+
+                    }
+                )
+
+
+
+            }
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                SettingsItemCard(
+                    modifier = Modifier.weight(1f),
+                    icon = R.drawable.update_icon,
+                    iconSize = 22.dp,
+                    mainText = "Update",
+                    smallText = "Get Latest Version of App",
+                    onCardClick = {
+                        if (navController.currentBackStackEntry?.lifecycle?.currentState
+                            == Lifecycle.State.RESUMED
+                        ) {
+                            navController.navigate(ScreenRoutes.AppUpdateScreen.route)
+                        }
+
+                    }
+                )
+
+                SettingsItemCard(
+                    modifier = Modifier.weight(1f),
                     icon = R.drawable.needhelpicon,
                     iconSize = 22.dp,
                     mainText = "About us",
@@ -207,31 +249,6 @@ fun SettingsScreen(navController: NavController, viewModel: WalkMateViewModel) {
                 )
 
             }
-
-            /*Spacer(modifier = Modifier.height(12.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                SettingsItemCard(
-                    modifier = Modifier.weight(1f),
-                    icon = R.drawable.worldicon,
-                    iconSize = 22.dp,
-                    iconColor = Purple80,
-                    mainText = "Language",
-                    smallText = "English"
-                )
-
-                SettingsItemCard(
-                    modifier = Modifier.weight(1f),
-                    icon = R.drawable.contacticon,
-                    iconSize = 20.dp,
-                    iconColor = Color.Yellow,
-                    mainText = "Contact Us",
-                    smallText = "Call us at +92...'"
-                )
-            }*/
         }
     }
 

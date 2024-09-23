@@ -36,3 +36,6 @@ val White = Color(0xFFFFFFFF)
 val lightCyan = Color(0xFF00BCD4) // Cyan for light theme
 val green = Color(0xFF4CAF50)
 val teal = Color(0xFF00897B)
+
+//val statusBarColor = Color(0xFF1E88E5)
+val statusBarColor = Color.Gray.copy(.5f)

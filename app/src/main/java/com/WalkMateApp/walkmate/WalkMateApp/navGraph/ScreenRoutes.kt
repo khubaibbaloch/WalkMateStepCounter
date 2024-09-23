@@ -20,4 +20,6 @@ sealed class ScreenRoutes(val route:String) {
     data object UpdateUserNameScreen:ScreenRoutes("UpdateSetUserNameScreenRoute")
     data object AboutYouScreen:ScreenRoutes("AboutYouScreenRoute")
     data object ReminderScreen:ScreenRoutes("ReminderScreenRoute")
+    data object PrivacyPolicyScreen:ScreenRoutes("PrivacyPolicyScreen")
+    data object AppUpdateScreen:ScreenRoutes("AppUpdateScreen")
 }
