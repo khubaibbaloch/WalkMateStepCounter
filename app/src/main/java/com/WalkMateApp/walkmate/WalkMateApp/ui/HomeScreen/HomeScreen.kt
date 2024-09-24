@@ -10,6 +10,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
@@ -91,10 +92,12 @@ import com.airbnb.lottie.LottieComposition
 import com.airbnb.lottie.compose.LottieAnimation
 import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.powervpn.PowerVPNApp.PowerVPN.inAppUpdate.CheckForUpdates
 import kotlinx.coroutines.delay
 import java.util.Calendar
 
 
+@RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @SuppressLint("DefaultLocale")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -158,9 +161,6 @@ fun HomeScreen(navController: NavController, viewModel: WalkMateViewModel) {
             }
         }
     }
-
-
-
 
 
     Scaffold(

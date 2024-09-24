@@ -30,6 +30,7 @@ import com.WalkMateApp.walkmate.WalkMateApp.MainViewModel.WalkMateViewModelFacto
 import com.WalkMateApp.walkmate.WalkMateApp.navGraph.RootNavGraph
 import com.WalkMateApp.walkmate.WalkMateApp.ui.AboutYou.AboutYouScreen
 import com.WalkMateApp.walkmate.ui.theme.WalkMateTheme
+import com.powervpn.PowerVPNApp.PowerVPN.inAppUpdate.CheckForUpdates
 
 
 class MainActivity : ComponentActivity() {
@@ -37,7 +38,8 @@ class MainActivity : ComponentActivity() {
         WalkMateViewModelFactory(this)
     }
 
-    @RequiresApi(Build.VERSION_CODES.Q)
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
@@ -45,7 +47,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             val currentTheme = viewModel.currentTheme.collectAsState()
             WalkMateThemes(currentTheme.value.toInt(),this@MainActivity) {
+
                 val navController = rememberNavController()
+
+                //InApp Update check
+                CheckForUpdates()
+
                 RootNavGraph(navController = navController, viewModel = viewModel)
                 // Call the permission check and request inside the LaunchedEffect
                 checkPermissionAndRequest(navController,this)
