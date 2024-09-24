@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "497875902320",
+    "project_id": "walkmate-7ba9f",
+    "storage_bucket": "walkmate-7ba9f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:497875902320:android:12261e6554fb6a88fc79b5",
+        "android_client_info": {
+          "package_name": "com.WalkMateApp.walkmate"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCGUNfe8DvBg9eNf3vP1fGHjX-8LZDxTsg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
