@@ -54,6 +54,14 @@
             android:exported="false"
             tools:ignore="ForegroundServicePermission" />
 
+        <service
+            android:name=".WalkMateApp.fcmService.MyFirebaseMessagingService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
         <receiver android:name=".WalkMateApp.service.Reminder.ReminderBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
