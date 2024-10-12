@@ -38,8 +38,11 @@ import com.powervpn.PowerVPNApp.PowerVPN.ui.settings.AppUpdate.AppUpdateScreen
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
-fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel) {
+fun RootNavGraph(
+    navController: NavHostController, viewModel: WalkMateViewModel,
+) {
     val isUserAccountCreated = viewModel.isUserAccountCreated.collectAsState()
+
     NavHost(
         navController = navController,
         startDestination = if (isUserAccountCreated.value) ScreenRoutes.HomeScreen.route else ScreenRoutes.UserNameScreen.route,
@@ -47,13 +50,15 @@ fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel)
             fadeIn(animationSpec = tween(200))
         },
         exitTransition = {
-             fadeOut(animationSpec = tween(200))
+            fadeOut(animationSpec = tween(200))
         },
-        popEnterTransition = {  fadeIn(
-                animationSpec = tween(200))
+        popEnterTransition = {
+            fadeIn(
+                animationSpec = tween(200)
+            )
         },
         popExitTransition = {
-             fadeOut(animationSpec = tween(200))
+            fadeOut(animationSpec = tween(200))
         }
     ) {
         composable(ScreenRoutes.HomeScreen.route) {
@@ -94,25 +99,25 @@ fun RootNavGraph(navController: NavHostController, viewModel: WalkMateViewModel)
             AboutUsScreen(navController = navController)
         }
         composable(ScreenRoutes.HeartRateScreen.route) {
-            HeartRateScreen(navController = navController,viewModel=viewModel)
+            HeartRateScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.UpdateGenderScreen.route) {
-            UpdateGenderScreen(navController = navController,viewModel=viewModel)
+            UpdateGenderScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.UpdateHeightScreen.route) {
-            UpdateHeightScreen(navController = navController,viewModel=viewModel)
+            UpdateHeightScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.UpdateWeightScreen.route) {
-            UpdateWeightScreen(navController = navController,viewModel=viewModel)
+            UpdateWeightScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.UpdateUserNameScreen.route) {
-            UpdateUserNameScreens(navController = navController,viewModel=viewModel)
+            UpdateUserNameScreens(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.AboutYouScreen.route) {
-            AboutYouScreen(navController = navController,viewModel=viewModel)
+            AboutYouScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.ReminderScreen.route) {
-            ReminderScreen(navController = navController,viewModel=viewModel)
+            ReminderScreen(navController = navController, viewModel = viewModel)
         }
         composable(ScreenRoutes.PrivacyPolicyScreen.route) {
             PrivacyPolicyScreen(navController = navController)

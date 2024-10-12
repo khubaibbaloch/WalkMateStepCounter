@@ -1,6 +1,10 @@
 package com.powervpn.PowerVPNApp.PowerVPN.ui.settings.AppUpdate
 
+import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -171,12 +175,21 @@ fun AppUpdateScreen(navController: NavController){
                         fontSize = 16.sp
                     )
                 } else if (isFailedToCheckUpdates) {
-                    Text(
-                        text = "Error checking updates. Visit the link for manual updates.",
-                        textAlign = TextAlign.Center,
-                        color = Color.Red,
-                        fontSize = 14.sp
-                    )
+                    if (!isNetworkAvailable(context)) { // Check if network is available
+                        Text(
+                            text = "No internet connection, try again.",
+                            textAlign = TextAlign.Center,
+                            color = Color.Red,
+                            fontSize = 14.sp
+                        )
+                    } else {
+                        Text(
+                            text = "Error checking updates. Visit the link for manual updates.",
+                            textAlign = TextAlign.Center,
+                            color = Color.Red,
+                            fontSize = 14.sp
+                        )
+                    }
                 }
             }
 
@@ -218,5 +231,25 @@ fun OpenLink(onClick: () -> Unit) {
                 onClick()
             }
         )
+    }
+}
+
+@SuppressLint("ObsoleteSdkInt")
+fun isNetworkAvailable(context: Context): Boolean {
+    val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        val network = connectivityManager.activeNetwork ?: return false
+        val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+        return when {
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+            activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
+            else -> false
+        }
+    } else {
+        @Suppress("DEPRECATION")
+        val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+        @Suppress("DEPRECATION")
+        return networkInfo.isConnected
     }
 }
