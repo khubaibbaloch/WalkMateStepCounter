@@ -22,10 +22,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.WalkMateApp.walkmate" />
+                  <option name="mobileSdkAppId" value="1:956881963457:android:6e1ddb63062139d4514740" />
+                  <option name="projectId" value="walkmate-71e7f" />
+                  <option name="projectNumber" value="956881963457" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />

@@ -13,7 +13,7 @@ android {
         applicationId = "com.WalkMateApp.walkmate"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
+        versionCode = 1
         versionName = "1.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
