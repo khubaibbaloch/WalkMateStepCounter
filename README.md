@@ -52,6 +52,8 @@
 
 ---
 
+## 📜 License
+
 This project is licensed under the [MIT License](LICENSE).  
 You are free to use, modify, and distribute this app for personal or educational purposes. Commercial use is permitted under the terms of the license.
 
